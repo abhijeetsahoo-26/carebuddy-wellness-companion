@@ -81,7 +81,8 @@ const VITAL_LABEL: Record<string, string> = {
 /** One unit per kind so tables and charts are comparable. */
 const VITAL_UNIT: Record<string, string> = { weight: "kg", blood_pressure: "mmHg", sugar_fasting: "mg/dL", sugar_after_meal: "mg/dL", temperature: "°F" };
 
-const clean = (s: string) => s.replace(/\s*\(sample\)/i, "").trim();
+// Kept verbatim so sample data stays visibly labelled "(sample)".
+const clean = (s: string) => s.trim();
 const round1 = (n: number) => Math.round(n * 10) / 10;
 const fmtTime = (iso: string) => formatTimeIST(iso);
 
