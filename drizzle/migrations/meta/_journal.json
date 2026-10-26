@@ -50,6 +50,13 @@
       "when": 1793004361735,
       "tag": "0006_sickday_caregivers",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793004385550,
+      "tag": "0007_caregiver_list",
+      "breakpoints": true
     }
   ]
 }

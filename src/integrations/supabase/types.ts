@@ -1222,6 +1222,7 @@ export type Database = {
       get_emergency_card: { Args: { _token: string }; Returns: Json }
       has_consent: { Args: { _uid: string }; Returns: boolean }
       leave_caregiver_grant: { Args: { _grant: string }; Returns: boolean }
+      my_caregiving: { Args: never; Returns: Json }
       open_share_link: { Args: { _token: string }; Returns: Json }
       save_doctor_plan: { Args: { p: Json }; Returns: string }
       set_caregiver_alerts: {
