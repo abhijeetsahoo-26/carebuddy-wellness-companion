@@ -43,6 +43,13 @@
       "when": 1793003738919,
       "tag": "0005_doctor_summary_sharing",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793004361735,
+      "tag": "0006_sickday_caregivers",
+      "breakpoints": true
     }
   ]
 }

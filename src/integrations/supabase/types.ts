@@ -18,18 +18,21 @@ export type Database = {
         Row: {
           calls: number
           day: string
+          idea_calls: number
           updated_at: string
           user_id: string
         }
         Insert: {
           calls?: number
           day: string
+          idea_calls?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           calls?: number
           day?: string
+          idea_calls?: number
           updated_at?: string
           user_id?: string
         }
@@ -108,6 +111,98 @@ export type Database = {
           entity_id?: string | null
           id?: string
           summary?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      caregiver_access_log: {
+        Row: {
+          caregiver_id: string
+          categories: string[]
+          created_at: string
+          grant_id: string | null
+          id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          caregiver_id: string
+          categories?: string[]
+          created_at?: string
+          grant_id?: string | null
+          id?: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          caregiver_id?: string
+          categories?: string[]
+          created_at?: string
+          grant_id?: string | null
+          id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caregiver_access_log_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "caregiver_grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      caregiver_grants: {
+        Row: {
+          accepted_at: string | null
+          alerts_enabled: boolean
+          can_adherence: boolean
+          can_appointments: boolean
+          can_missed_alerts: boolean
+          caregiver_id: string | null
+          created_at: string
+          id: string
+          invite_expires_at: string | null
+          invite_hash: string | null
+          is_demo: boolean
+          label: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          alerts_enabled?: boolean
+          can_adherence?: boolean
+          can_appointments?: boolean
+          can_missed_alerts?: boolean
+          caregiver_id?: string | null
+          created_at?: string
+          id?: string
+          invite_expires_at?: string | null
+          invite_hash?: string | null
+          is_demo?: boolean
+          label: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          alerts_enabled?: boolean
+          can_adherence?: boolean
+          can_appointments?: boolean
+          can_missed_alerts?: boolean
+          caregiver_id?: string | null
+          created_at?: string
+          id?: string
+          invite_expires_at?: string | null
+          invite_hash?: string | null
+          is_demo?: boolean
+          label?: string
+          status?: string
           updated_at?: string
           user_id?: string
         }
@@ -881,6 +976,50 @@ export type Database = {
         }
         Relationships: []
       }
+      sick_day_sessions: {
+        Row: {
+          checkins: Json
+          created_at: string
+          ended_at: string | null
+          id: string
+          is_demo: boolean
+          started_at: string
+          unwell_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          checkins?: Json
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          is_demo?: boolean
+          started_at?: string
+          unwell_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          checkins?: Json
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          is_demo?: boolean
+          started_at?: string
+          unwell_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sick_day_sessions_unwell_session_id_fkey"
+            columns: ["unwell_session_id"]
+            isOneToOne: false
+            referencedRelation: "unwell_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sleep_logs: {
         Row: {
           created_at: string
@@ -1071,16 +1210,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_caregiver_invite: { Args: { _token: string }; Returns: string }
       claim_ai_call: { Args: { _cap: number }; Returns: boolean }
+      claim_meal_idea_call: { Args: { _cap: number }; Returns: boolean }
       generate_doses: {
         Args: { _days?: number; _user: string }
         Returns: number
       }
       generate_my_doses: { Args: never; Returns: number }
+      get_caregiver_dashboard: { Args: { _grant: string }; Returns: Json }
       get_emergency_card: { Args: { _token: string }; Returns: Json }
       has_consent: { Args: { _uid: string }; Returns: boolean }
+      leave_caregiver_grant: { Args: { _grant: string }; Returns: boolean }
       open_share_link: { Args: { _token: string }; Returns: Json }
       save_doctor_plan: { Args: { p: Json }; Returns: string }
+      set_caregiver_alerts: {
+        Args: { _grant: string; _on: boolean }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
