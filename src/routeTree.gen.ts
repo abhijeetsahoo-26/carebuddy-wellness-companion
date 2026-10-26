@@ -32,6 +32,7 @@ import { Route as VitalsRouteImport } from './routes/vitals'
 import { Route as WaterSleepRouteImport } from './routes/water-sleep'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
 import { Route as CTokenRouteImport } from './routes/c.$token'
+import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as SettingsEmergencyNumbersRouteImport } from './routes/settings.emergency-numbers'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
 import { Route as ApiPublicPushActionRouteImport } from './routes/api/public/push-action'
@@ -152,6 +153,11 @@ const CTokenRoute = CTokenRouteImport.update({
   path: '/c/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const STokenRoute = STokenRouteImport.update({
+  id: '/s/$token',
+  path: '/s/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsEmergencyNumbersRoute =
   SettingsEmergencyNumbersRouteImport.update({
     id: '/settings/emergency-numbers',
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -227,6 +234,7 @@ export interface FileRoutesByTo {
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -257,6 +265,7 @@ export interface FileRoutesById {
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -288,6 +297,7 @@ export interface FileRouteTypes {
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -346,6 +357,7 @@ export interface FileRouteTypes {
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -376,6 +388,7 @@ export interface RootRouteChildren {
   WaterSleepRoute: typeof WaterSleepRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
   CTokenRoute: typeof CTokenRoute
+  STokenRoute: typeof STokenRoute
   SettingsEmergencyNumbersRoute: typeof SettingsEmergencyNumbersRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
   ApiPublicPushActionRoute: typeof ApiPublicPushActionRoute
@@ -545,6 +558,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/s/$token': {
+      id: '/s/$token'
+      path: '/s/$token'
+      fullPath: '/s/$token'
+      preLoaderRoute: typeof STokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/emergency-numbers': {
       id: '/settings/emergency-numbers'
       path: '/settings/emergency-numbers'
@@ -600,6 +620,7 @@ const rootRouteChildren: RootRouteChildren = {
   WaterSleepRoute: WaterSleepRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
   CTokenRoute: CTokenRoute,
+  STokenRoute: STokenRoute,
   SettingsEmergencyNumbersRoute: SettingsEmergencyNumbersRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
   ApiPublicPushActionRoute: ApiPublicPushActionRoute,
