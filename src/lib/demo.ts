@@ -39,3 +39,14 @@ export const DEMO_DIARY = [
   { symptoms: ["Runny or blocked nose (sample)", "Tiredness"], severity: 2, result: "self_care" as const, notes: "Sample entry: made up for trying the app.", daysAgo: 2, minutes: 9 * 60 },
   { symptoms: ["Headache (sample)"], severity: 4, result: null, notes: "Sample entry: felt better after rest.", daysAgo: 1, minutes: 18 * 60 },
 ] as const;
+
+export const DEMO_APPOINTMENTS = [
+  { inDays: 3, minutes: 10 * 60 + 30, row: { doctor: "Dr. Sample (sample)", location: "Sample Clinic, MG Road", purpose: "Routine check-up (sample)", notes: "Made-up appointment.", questions: ["Sample question: should I keep the same timings?"] } },
+] as const;
+
+// Made-up values for trying the charts. CareBuddy never labels values as good or bad.
+export const DEMO_VITALS = [
+  { kind: "weight" as const, unit: "kg" as const, values: [68.2, 68.0, 68.4, 68.1, 67.9, 68.0, 67.8] as (number | [number, number])[] },
+  { kind: "blood_pressure" as const, unit: "mmHg" as const, values: [[128, 82], [124, 80], [130, 84], [126, 81]] as (number | [number, number])[] },
+  { kind: "temperature" as const, unit: "°F" as const, values: [98.4, 98.6] as (number | [number, number])[] },
+];
