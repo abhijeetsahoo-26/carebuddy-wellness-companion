@@ -5,5 +5,5 @@
 - [x] Sample data, export and delete cover new data
 - [x] Tests: check-in logic, reply check, caregiver permissions
 
-- [ ] Emergency card link expiry (1/7/30 days or until off, default 30) + date shown + test
-- [ ] Re-audit changes (wording, RLS unchanged, landing claims, tests)
+- [x] Emergency card link expiry (1/7/30 days or until off, default 30) + date shown + test
+- [x] Re-audit changes (wording, RLS unchanged, landing claims, tests)

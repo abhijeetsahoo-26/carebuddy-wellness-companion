@@ -83,3 +83,5 @@ A personal medication, meal and symptom companion. **Not** a doctor, pharmacist,
 - AI meal notes and meal ideas can be unavailable or rejected by the safety filter; meals still save and no other feature uses AI.
 - The emergency number list is for India; numbers can differ by area. The app only opens the phone dialer and never calls anyone itself.
 - Open share / emergency card pages already loaded in a browser keep showing what was loaded until refreshed; new loads stop at once after revoke or expiry.
+- Emergency card links last 1, 7 or 30 days (default 30) or until you turn them off; expiry is checked when the card is opened.
+- Signed-out visitors at "/" see the public landing page; signed-in visitors see Today after a short loading moment.
