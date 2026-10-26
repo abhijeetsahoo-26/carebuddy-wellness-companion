@@ -8,6 +8,10 @@ const safe = (s: string) => s.replace(/[\u2010-\u2015]/g, "-").replace(/[\u2018\
   .replace(/\u2026/g, "...").replace(/\u202F|\u00A0/g, " ").replace(/[^\x20-\x7E\u00A0-\u00FF]/g, "?");
 
 export function summaryPdf(doc: SummaryDoc): Blob {
+  return new Blob([summaryPdfBytes(doc)], { type: "application/pdf" });
+}
+
+export function summaryPdfBytes(doc: SummaryDoc): ArrayBuffer {
   const pdf = new jsPDF({ unit: "mm", format: "a4" });
   const W = pdf.internal.pageSize.getWidth();
   const M = 14;
@@ -97,7 +101,7 @@ export function summaryPdf(doc: SummaryDoc): Blob {
     pdf.setFont("helvetica", "normal");
     pdf.text(safe(`Generated ${doc.generatedAtLabel}. Dates YYYY-MM-DD, India time.   Page ${i} of ${pages}`), M, H - 6.5);
   }
-  return pdf.output("blob");
+  return pdf.output("arraybuffer");
 }
 
 function chart(pdf: jsPDF, x: number, y: number, w: number, h: number, a: number[], b: (number | null)[]) {
