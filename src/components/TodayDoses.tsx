@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Droplet, SkipForward, Clock, Undo2 } from "lucide-react";
+import { Check, Droplet, SkipForward, Clock, Undo2, Flame, PackageSearch } from "lucide-react";
+
+import { MISSED_DOSE_TEXT, LOW_SUPPLY_TEXT, OUT_OF_SUPPLY_TEXT, streak, streakMessage, supplyStatus } from "@/lib/tracking";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +60,7 @@ export function TodayDoses() {
 
   return (
     <>
+      <SupplyAlert />
       <section className="mt-6 rounded-2xl border-2 border-primary bg-card p-5" aria-labelledby="next-dose">
         <h2 id="next-dose" className="text-xl font-semibold">Next medicine</h2>
         {!doses.length ? (
@@ -93,6 +96,7 @@ export function TodayDoses() {
                 <div className="flex items-center gap-3">
                   <span className="w-20 shrink-0 font-semibold">{formatTimeIST(d.scheduled_at)}</span>
                   <span className="flex-1">{d.medicine?.name} {d.is_demo && <Badge variant="secondary">Sample</Badge>}</span>
+                  {d.status === "pending" && new Date(d.scheduled_at) < new Date() && <Badge variant="outline">Not marked</Badge>}
                 </div>
                 {d.status === "pending" ? (
                   <div className="mt-3 grid grid-cols-3 gap-2">
@@ -101,16 +105,20 @@ export function TodayDoses() {
                     <Button size="sm" variant="outline" onClick={() => doMark(d, "skipped")}>Skip</Button>
                   </div>
                 ) : (
+                  <>
                   <div className="mt-2 flex items-center justify-between gap-2 text-muted-foreground">
                     <span>{STATUS[d.status]}{d.logged_at ? ` at ${formatTimeIST(d.logged_at)}` : ""}</span>
                     {canUndo(d.logged_at) && <Button size="sm" variant="ghost" onClick={() => doUndo(d)}><Undo2 /> Undo</Button>}
                   </div>
+                  {(d.status === "skipped" || d.status === "late") && <MissedNote instruction={d.medicine?.missed_dose_instruction ?? null} />}
+                  </>
                 )}
               </li>
             ))}
           </ul>
         </section>
       )}
+      <StreakCard />
       <WaterCard />
     </>
   );
@@ -144,6 +152,55 @@ function WaterCard() {
         <p className="text-muted-foreground">{q.data ?? 0} glasses today</p>
       </div>
       <Button size="lg" onClick={plus} aria-label="Add one glass of water">+1</Button>
+    </section>
+  );
+}
+
+function MissedNote({ instruction }: { instruction: string | null }) {
+  return (
+    <div className="mt-2 rounded-xl bg-secondary/60 p-3 text-base">
+      <p>{MISSED_DOSE_TEXT}</p>
+      {instruction && <p className="mt-1"><span className="font-semibold">Your doctor's instruction:</span> {instruction}</p>}
+    </div>
+  );
+}
+
+function SupplyAlert() {
+  const q = useQuery({
+    queryKey: ["medicines", "supply"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("medicines").select("id, name, tablets_remaining, tablets_per_dose, times").is("archived_at", null).not("tablets_remaining", "is", null);
+      if (error) throw error;
+      return data.map((m) => ({ ...m, st: supplyStatus(Number(m.tablets_remaining), Number(m.tablets_per_dose), m.times.length) })).filter((m) => m.st === "low" || m.st === "out");
+    },
+  });
+  if (!q.data?.length) return null;
+  return (
+    <section className="mt-6 rounded-2xl border-2 border-primary bg-secondary p-5" aria-labelledby="supply">
+      <h2 id="supply" className="flex items-center gap-2 text-xl font-semibold"><PackageSearch className="size-6" aria-hidden /> {LOW_SUPPLY_TEXT}</h2>
+      <ul className="mt-2 space-y-1 text-lg">
+        {q.data.map((m) => <li key={m.id}><span className="font-semibold">{m.name}:</span> {m.st === "out" ? OUT_OF_SUPPLY_TEXT : `${Number(m.tablets_remaining)} left`}</li>)}
+      </ul>
+      <Link to="/medicines" className="mt-2 inline-flex min-h-11 items-center font-semibold text-primary underline">Update counts</Link>
+    </section>
+  );
+}
+
+function StreakCard() {
+  const q = useDoses(60);
+  const prev = useRef<number | null>(null);
+  const n = q.data ? streak(q.data) : null;
+  let msg = n === null ? "" : streakMessage(n, false);
+  if (n !== null && prev.current !== null) {
+    if (n > prev.current) msg = streakMessage(n, true);
+    else if (n === 0 && prev.current > 0) msg = "Your streak has reset. That's okay — a new one starts with your next dose.";
+  }
+  useEffect(() => { if (n !== null) prev.current = n; });
+  if (n === null) return null;
+  return (
+    <section className="mt-6 flex items-center gap-4 rounded-2xl border bg-card p-5" aria-live="polite">
+      <Flame className="size-8 text-primary" aria-hidden />
+      <div><h2 className="text-xl font-semibold">Streak: {n} day{n === 1 ? "" : "s"}</h2><p className="text-muted-foreground">{msg}</p></div>
     </section>
   );
 }
