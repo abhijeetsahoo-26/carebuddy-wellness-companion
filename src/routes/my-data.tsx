@@ -39,7 +39,13 @@ function MyData() {
 
   async function prepare() {
     setBusy(true);
-    try { setFile(new Blob([await exp()], { type: "application/json" })); }
+    try {
+      const { exportFiles } = await import("@/lib/data-export");
+      const { default: JSZip } = await import("jszip");
+      const zip = new JSZip();
+      for (const [name, body] of Object.entries(exportFiles(await exp()))) zip.file(name, body);
+      setFile(await zip.generateAsync({ type: "blob" }));
+    }
     catch (e) { showError(e); } finally { setBusy(false); }
   }
 
@@ -48,7 +54,7 @@ function MyData() {
     const url = URL.createObjectURL(file);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `carebuddy-data-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `carebuddy-data-${new Date().toISOString().slice(0, 10)}.zip`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 30000);
   }
@@ -69,7 +75,7 @@ function MyData() {
       <PageTitle title="My data" />
       <section className="mt-6 rounded-2xl border bg-card p-5">
         <h2 className="text-xl font-semibold">Download my data</h2>
-        <p className="mt-1 text-muted-foreground">Get a copy of everything we store about you, as a file.</p>
+        <p className="mt-1 text-muted-foreground">Get a copy of everything we store about you: a ZIP with one spreadsheet (CSV) per kind of data, one JSON file, and a readme explaining each file.</p>
         {file ? (
           <Button size="lg" className="mt-4 w-full" onClick={save}><Download /> Save my file</Button>
         ) : (
@@ -89,7 +95,7 @@ function MyData() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete everything?</AlertDialogTitle>
-              <AlertDialogDescription>Your account, profile, contacts and activity will be removed forever. Type DELETE to confirm.</AlertDialogDescription>
+              <AlertDialogDescription>Your account and everything in it, including doctor share links, their open history and summaries, will be removed forever. Type DELETE to confirm.</AlertDialogDescription>
             </AlertDialogHeader>
             <Label htmlFor="confirm-del" className="sr-only">Type DELETE</Label>
             <Input id="confirm-del" className="h-12 text-base" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="DELETE" />
