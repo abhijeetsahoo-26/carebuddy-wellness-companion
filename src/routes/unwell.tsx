@@ -69,7 +69,7 @@ function Unwell() {
       {step > 0 && <Button variant="ghost" size="lg" className="mt-6" onClick={() => setStep(step - 1)}><ArrowLeft /> Back</Button>}
     </>
   );
-  const YN = ({ k, value }: { k: keyof UnwellAnswers; value?: boolean }) => (
+  const YN = ({ k, value }: { k: keyof UnwellAnswers; value?: boolean | undefined }) => (
     <div className="grid gap-3">
       <Big pressed={value === true} onClick={() => yesNo(k)(true)}>Yes</Big>
       <Big pressed={value === false} onClick={() => yesNo(k)(false)}>No</Big>
@@ -155,7 +155,7 @@ function Unwell() {
   );
 }
 
-function Big({ pressed, onClick, children }: { pressed?: boolean; onClick: () => void; children: React.ReactNode }) {
+function Big({ pressed, onClick, children }: { pressed?: boolean | undefined; onClick: () => void; children: React.ReactNode }) {
   return (
     <button type="button" aria-pressed={!!pressed} onClick={onClick}
       className="min-h-16 rounded-2xl border-2 bg-card px-4 text-xl font-semibold aria-pressed:border-primary aria-pressed:bg-secondary">{children}</button>

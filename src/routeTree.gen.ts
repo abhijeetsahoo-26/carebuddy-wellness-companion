@@ -26,6 +26,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReminderHealthRouteImport } from './routes/reminder-health'
 import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
+import { Route as SettingsEmergencyNumbersRouteImport } from './routes/settings.emergency-numbers'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
 import { Route as ApiPublicPushActionRouteImport } from './routes/api/public/push-action'
 import { Route as ApiPublicJobsRemindersRouteImport } from './routes/api/public/jobs/reminders'
@@ -115,6 +116,12 @@ const WhatWeStoreRoute = WhatWeStoreRouteImport.update({
   path: '/what-we-store',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsEmergencyNumbersRoute =
+  SettingsEmergencyNumbersRouteImport.update({
+    id: '/settings/emergency-numbers',
+    path: '/settings/emergency-numbers',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SettingsRemindersRoute = SettingsRemindersRouteImport.update({
   id: '/settings/reminders',
   path: '/settings/reminders',
@@ -149,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
@@ -171,6 +179,7 @@ export interface FileRoutesByTo {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
@@ -194,6 +203,7 @@ export interface FileRoutesById {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
@@ -262,6 +274,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
@@ -285,6 +298,7 @@ export interface RootRouteChildren {
   ReminderHealthRoute: typeof ReminderHealthRoute
   UnwellRoute: typeof UnwellRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
+  SettingsEmergencyNumbersRoute: typeof SettingsEmergencyNumbersRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
   ApiPublicPushActionRoute: typeof ApiPublicPushActionRoute
   ApiPublicJobsRemindersRoute: typeof ApiPublicJobsRemindersRoute
@@ -411,6 +425,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhatWeStoreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/emergency-numbers': {
+      id: '/settings/emergency-numbers'
+      path: '/settings/emergency-numbers'
+      fullPath: '/settings/emergency-numbers'
+      preLoaderRoute: typeof SettingsEmergencyNumbersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/reminders': {
       id: '/settings/reminders'
       path: '/settings/reminders'
@@ -453,6 +474,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReminderHealthRoute: ReminderHealthRoute,
   UnwellRoute: UnwellRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
+  SettingsEmergencyNumbersRoute: SettingsEmergencyNumbersRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
   ApiPublicPushActionRoute: ApiPublicPushActionRoute,
   ApiPublicJobsRemindersRoute: ApiPublicJobsRemindersRoute,
