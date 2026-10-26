@@ -43,3 +43,9 @@ A personal medication, meal and symptom companion. **Not** a doctor, pharmacist,
 - `bunx vitest run` — routing, validation and reminder-rule tests.
 - Reminders: open the published app on a phone, More → Reminders → turn on → Send test reminder → Reminder health.
 - Manual: sign up → consent → onboarding (skip steps) → More → Try sample data → Activity shows entries → Download my data → Delete account.
+
+## Doctor's Plan and meals
+- Tables: `doctor_plan_versions` (one row per save), `doctor_plan_medicines`, `doctor_plan_diet`, `doctor_plan_limits` (children of a version), `meals` (soft delete via `deleted_at` for Undo), `ai_usage` (daily AI-call counter, cap 20/day).
+- Prescription uploads: private `prescriptions` storage bucket, folder per user.
+- AI note: `src/lib/meal-ai.server.ts` (Lovable AI, meal text only) → `checkMealNote()` in `src/lib/meal-note.ts`. Any failure, cap or blocked word shows "Note unavailable"; the meal is always kept.
+- Tests: `bunx vitest run` (includes `src/test/plan-meals.test.tsx`).
