@@ -74,3 +74,12 @@ A personal medication, meal and symptom companion. **Not** a doctor, pharmacist,
 - Meal ideas (`getMealIdeas` in `plan.functions.ts`): sends only diet rules, foods to avoid and allergies; reply must pass `checkMealIdeas()`; cap 10/day via `claim_meal_idea_call()`. No diet rules → fixed general tips, no AI call.
 - Caregivers: `caregiver_grants` (single-use 3-day invite, hashed; categories adherence / not-marked alerts / appointments), `caregiver_access_log`. Caregivers read only through `get_caregiver_dashboard(grant)` (active grant for the caller, switched-on categories only, logs each view). Pause/revoke takes effect on the next read. Missed-dose alerts run in the reminder job (2 h after the dose time, dedupe key per grant+dose). Activity records invite/grant/edit/pause/resume/revoke/cancel.
 - Tests: `src/test/sickday-caregiver.test.tsx`.
+
+## Known limitations
+- CareBuddy is **not a medical device**, a doctor, a pharmacist or an emergency service. It never diagnoses or recommends medicines; it only repeats the plan you enter from your doctor.
+- Reminders are checked every 5 minutes, so a reminder **can arrive up to 5 minutes late** (second reminders 15–20 minutes after the first).
+- **Push on iPhone/iPad needs the Home Screen**: open in Safari, Share → Add to Home Screen, then turn on reminders from the installed app (iOS 16.4+).
+- Notifications depend on the phone and browser; battery savers or blocked permissions can stop them. Use Reminder health to check.
+- AI meal notes and meal ideas can be unavailable or rejected by the safety filter; meals still save and no other feature uses AI.
+- The emergency number list is for India; numbers can differ by area. The app only opens the phone dialer and never calls anyone itself.
+- Open share / emergency card pages already loaded in a browser keep showing what was loaded until refreshed; new loads stop at once after revoke or expiry.
