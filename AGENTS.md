@@ -24,3 +24,6 @@
 - Plan and meal server functions live in `src/lib/plan.functions.ts`. Why: keep the core functions file small.
 - AI meal notes send only the meal text, are capped per user per day via `public.claim_ai_call()`, and must pass `checkMealNote()` server-side before being stored. Why: no medical claims reach the user.
 - Prescription files live in the private `prescriptions` bucket under `<user_id>/`; never extract or interpret them. Why: user reference only.
+- Unwell triage is the pure `decide()` in `src/lib/unwell.ts` (no AI); the server re-decides from the answers before saving. Emergency checks run first and always win. Why: deterministic, tested safety logic.
+- Diary, unwell-check and emergency-number server functions live in `src/lib/diary.functions.ts`. Why: grouped by feature.
+- `emergency_directory` rows with `user_id IS NULL` are shared defaults; a user's row with the same `key` overrides it for them only. `src/lib/directory.ts` keeps a built-in copy so Emergency works even if loading fails. Why: emergency numbers must always show.

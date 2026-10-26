@@ -49,3 +49,9 @@ A personal medication, meal and symptom companion. **Not** a doctor, pharmacist,
 - Prescription uploads: private `prescriptions` storage bucket, folder per user.
 - AI note: `src/lib/meal-ai.server.ts` (Lovable AI, meal text only) → `checkMealNote()` in `src/lib/meal-note.ts`. Any failure, cap or blocked word shows "Note unavailable"; the meal is always kept.
 - Tests: `bunx vitest run` (includes `src/test/plan-meals.test.tsx`).
+
+## Unwell check, symptom diary, emergency directory
+- `/unwell`: 13 steps, then `decide()` (`src/lib/unwell.ts`) picks Emergency / See a doctor soon / Self-care. High fever = 102 °F or more; repeated vomiting/diarrhoea = 3+ times today. Saved to `unwell_sessions` and `symptom_entries`.
+- `/diary`: timeline, manual entries, notes edits, delete with Undo (soft delete); shows that day's meals and taken doses.
+- `/emergency` and `/settings/emergency-numbers`: numbers from `emergency_directory`; dialer only, never auto-dial.
+- Tests: `src/test/unwell-decision.test.tsx` covers every red flag.
