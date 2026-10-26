@@ -77,6 +77,53 @@ export type Database = {
         }
         Relationships: []
       }
+      dose_logs: {
+        Row: {
+          created_at: string
+          id: string
+          is_demo: boolean
+          logged_at: string | null
+          medicine_id: string
+          scheduled_at: string
+          snoozed_until: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          logged_at?: string | null
+          medicine_id: string
+          scheduled_at: string
+          snoozed_until?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          logged_at?: string | null
+          medicine_id?: string
+          scheduled_at?: string
+          snoozed_until?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dose_logs_medicine_id_fkey"
+            columns: ["medicine_id"]
+            isOneToOne: false
+            referencedRelation: "medicines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       emergency_contacts: {
         Row: {
           created_at: string
@@ -105,6 +152,66 @@ export type Database = {
           name?: string
           phone?: string
           relationship?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      medicines: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          dose_amount: string | null
+          end_date: string | null
+          food: string
+          form: string | null
+          generic_name: string | null
+          id: string
+          is_demo: boolean
+          name: string
+          notes: string | null
+          prescribed_by: string | null
+          start_date: string
+          strength: string | null
+          times: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          dose_amount?: string | null
+          end_date?: string | null
+          food?: string
+          form?: string | null
+          generic_name?: string | null
+          id?: string
+          is_demo?: boolean
+          name: string
+          notes?: string | null
+          prescribed_by?: string | null
+          start_date?: string
+          strength?: string | null
+          times?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          dose_amount?: string | null
+          end_date?: string | null
+          food?: string
+          form?: string | null
+          generic_name?: string | null
+          id?: string
+          is_demo?: boolean
+          name?: string
+          notes?: string | null
+          prescribed_by?: string | null
+          start_date?: string
+          strength?: string | null
+          times?: string[]
           updated_at?: string
           user_id?: string
         }
@@ -164,11 +271,156 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reminder_log: {
+        Row: {
+          created_at: string
+          dedupe_key: string
+          detail: string | null
+          dose_id: string | null
+          id: string
+          kind: string
+          scheduled_for: string | null
+          sent_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dedupe_key: string
+          detail?: string | null
+          dose_id?: string | null
+          id?: string
+          kind: string
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dedupe_key?: string
+          detail?: string | null
+          dose_id?: string | null
+          id?: string
+          kind?: string
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminder_log_dose_id_fkey"
+            columns: ["dose_id"]
+            isOneToOne: false
+            referencedRelation: "dose_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reminder_settings: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          last_test_received_at: string | null
+          last_test_sent_at: string | null
+          quiet_end: string | null
+          quiet_start: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          last_test_received_at?: string | null
+          last_test_sent_at?: string | null
+          quiet_end?: string | null
+          quiet_start?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          last_test_received_at?: string | null
+          last_test_sent_at?: string | null
+          quiet_end?: string | null
+          quiet_start?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      water_logs: {
+        Row: {
+          created_at: string
+          id: string
+          is_demo: boolean
+          logged_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          logged_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          logged_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      generate_doses: {
+        Args: { _days?: number; _user: string }
+        Returns: number
+      }
+      generate_my_doses: { Args: never; Returns: number }
       has_consent: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {
