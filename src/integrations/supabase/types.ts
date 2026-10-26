@@ -14,13 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity: string
+          entity_id: string | null
+          id: string
+          summary: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity: string
+          entity_id?: string | null
+          id?: string
+          summary?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          summary?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      consents: {
+        Row: {
+          accepted_at: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          version: string
+        }
+        Update: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      emergency_contacts: {
+        Row: {
+          created_at: string
+          id: string
+          is_demo: boolean
+          name: string
+          phone: string
+          relationship: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          name: string
+          phone: string
+          relationship?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          name?: string
+          phone?: string
+          relationship?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age_group: string | null
+          allergies: string | null
+          conditions: string | null
+          created_at: string
+          diet: string | null
+          doctor_name: string | null
+          doctor_phone: string | null
+          full_name: string | null
+          is_demo: boolean
+          onboarding_done: boolean
+          onboarding_step: number
+          pharmacist_name: string | null
+          pharmacist_phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age_group?: string | null
+          allergies?: string | null
+          conditions?: string | null
+          created_at?: string
+          diet?: string | null
+          doctor_name?: string | null
+          doctor_phone?: string | null
+          full_name?: string | null
+          is_demo?: boolean
+          onboarding_done?: boolean
+          onboarding_step?: number
+          pharmacist_name?: string | null
+          pharmacist_phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age_group?: string | null
+          allergies?: string | null
+          conditions?: string | null
+          created_at?: string
+          diet?: string | null
+          doctor_name?: string | null
+          doctor_phone?: string | null
+          full_name?: string | null
+          is_demo?: boolean
+          onboarding_done?: boolean
+          onboarding_step?: number
+          pharmacist_name?: string | null
+          pharmacist_phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_consent: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
