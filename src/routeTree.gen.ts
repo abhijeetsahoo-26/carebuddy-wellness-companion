@@ -14,6 +14,7 @@ import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as ContactsRouteImport } from './routes/contacts'
+import { Route as DiaryRouteImport } from './routes/diary'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as MealsRouteImport } from './routes/meals'
 import { Route as MedicinesRouteImport } from './routes/medicines'
@@ -52,6 +53,11 @@ const ConsentRoute = ConsentRouteImport.update({
 const ContactsRoute = ContactsRouteImport.update({
   id: '/contacts',
   path: '/contacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiaryRoute = DiaryRouteImport.update({
+  id: '/diary',
+  path: '/diary',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmergencyRoute = EmergencyRouteImport.update({
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
+  '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
+  '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
+  '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/consent'
     | '/contacts'
+    | '/diary'
     | '/emergency'
     | '/meals'
     | '/medicines'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/consent'
     | '/contacts'
+    | '/diary'
     | '/emergency'
     | '/meals'
     | '/medicines'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/consent'
     | '/contacts'
+    | '/diary'
     | '/emergency'
     | '/meals'
     | '/medicines'
@@ -261,6 +273,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConsentRoute: typeof ConsentRoute
   ContactsRoute: typeof ContactsRoute
+  DiaryRoute: typeof DiaryRoute
   EmergencyRoute: typeof EmergencyRoute
   MealsRoute: typeof MealsRoute
   MedicinesRoute: typeof MedicinesRoute
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/contacts'
       fullPath: '/contacts'
       preLoaderRoute: typeof ContactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diary': {
+      id: '/diary'
+      path: '/diary'
+      fullPath: '/diary'
+      preLoaderRoute: typeof DiaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/emergency': {
@@ -421,6 +441,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConsentRoute: ConsentRoute,
   ContactsRoute: ContactsRoute,
+  DiaryRoute: DiaryRoute,
   EmergencyRoute: EmergencyRoute,
   MealsRoute: MealsRoute,
   MedicinesRoute: MedicinesRoute,
