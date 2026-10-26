@@ -141,7 +141,7 @@ function Unwell() {
         <Big pressed={d.self_harm === false} onClick={() => yesNo("self_harm")(false)}>No</Big>
       </div>
     )),
-    () => q("Your medicines and allergies", (
+    () => q("Your allergies", (
       <>
         <Reminder />
         <Button size="lg" className="mt-6 w-full" onClick={() => void finish(d)}>See what to do</Button>
