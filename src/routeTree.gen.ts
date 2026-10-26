@@ -14,6 +14,7 @@ import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CardRouteImport } from './routes/card'
+import { Route as CaregivingRouteImport } from './routes/caregiving'
 import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as DiaryRouteImport } from './routes/diary'
@@ -34,6 +35,7 @@ import { Route as VitalsRouteImport } from './routes/vitals'
 import { Route as WaterSleepRouteImport } from './routes/water-sleep'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
 import { Route as CTokenRouteImport } from './routes/c.$token'
+import { Route as CaregiverInviteTokenRouteImport } from './routes/caregiver-invite.$token'
 import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as SettingsEmergencyNumbersRouteImport } from './routes/settings.emergency-numbers'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
@@ -63,6 +65,11 @@ const AuthRoute = AuthRouteImport.update({
 const CardRoute = CardRouteImport.update({
   id: '/card',
   path: '/card',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaregivingRoute = CaregivingRouteImport.update({
+  id: '/caregiving',
+  path: '/caregiving',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConsentRoute = ConsentRouteImport.update({
@@ -165,6 +172,11 @@ const CTokenRoute = CTokenRouteImport.update({
   path: '/c/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CaregiverInviteTokenRoute = CaregiverInviteTokenRouteImport.update({
+  id: '/caregiver-invite/$token',
+  path: '/caregiver-invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const STokenRoute = STokenRouteImport.update({
   id: '/s/$token',
   path: '/s/$token',
@@ -198,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/card': typeof CardRoute
+  '/caregiving': typeof CaregivingRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
@@ -218,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/caregiver-invite/$token': typeof CaregiverInviteTokenRoute
   '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
@@ -230,6 +244,7 @@ export interface FileRoutesByTo {
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/card': typeof CardRoute
+  '/caregiving': typeof CaregivingRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
@@ -250,6 +265,7 @@ export interface FileRoutesByTo {
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/caregiver-invite/$token': typeof CaregiverInviteTokenRoute
   '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
@@ -263,6 +279,7 @@ export interface FileRoutesById {
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/card': typeof CardRoute
+  '/caregiving': typeof CaregivingRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
@@ -283,6 +300,7 @@ export interface FileRoutesById {
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/caregiver-invite/$token': typeof CaregiverInviteTokenRoute
   '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
@@ -297,6 +315,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/auth'
     | '/card'
+    | '/caregiving'
     | '/consent'
     | '/contacts'
     | '/diary'
@@ -317,6 +336,7 @@ export interface FileRouteTypes {
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/caregiver-invite/$token'
     | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
@@ -329,6 +349,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/auth'
     | '/card'
+    | '/caregiving'
     | '/consent'
     | '/contacts'
     | '/diary'
@@ -349,6 +370,7 @@ export interface FileRouteTypes {
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/caregiver-invite/$token'
     | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
@@ -361,6 +383,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/auth'
     | '/card'
+    | '/caregiving'
     | '/consent'
     | '/contacts'
     | '/diary'
@@ -381,6 +404,7 @@ export interface FileRouteTypes {
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/caregiver-invite/$token'
     | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
@@ -394,6 +418,7 @@ export interface RootRouteChildren {
   AppointmentsRoute: typeof AppointmentsRoute
   AuthRoute: typeof AuthRoute
   CardRoute: typeof CardRoute
+  CaregivingRoute: typeof CaregivingRoute
   ConsentRoute: typeof ConsentRoute
   ContactsRoute: typeof ContactsRoute
   DiaryRoute: typeof DiaryRoute
@@ -414,6 +439,7 @@ export interface RootRouteChildren {
   WaterSleepRoute: typeof WaterSleepRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
   CTokenRoute: typeof CTokenRoute
+  CaregiverInviteTokenRoute: typeof CaregiverInviteTokenRoute
   STokenRoute: typeof STokenRoute
   SettingsEmergencyNumbersRoute: typeof SettingsEmergencyNumbersRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
@@ -456,6 +482,13 @@ declare module '@tanstack/react-router' {
       path: '/card'
       fullPath: '/card'
       preLoaderRoute: typeof CardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/caregiving': {
+      id: '/caregiving'
+      path: '/caregiving'
+      fullPath: '/caregiving'
+      preLoaderRoute: typeof CaregivingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/consent': {
@@ -598,6 +631,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/caregiver-invite/$token': {
+      id: '/caregiver-invite/$token'
+      path: '/caregiver-invite/$token'
+      fullPath: '/caregiver-invite/$token'
+      preLoaderRoute: typeof CaregiverInviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/s/$token': {
       id: '/s/$token'
       path: '/s/$token'
@@ -642,6 +682,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppointmentsRoute: AppointmentsRoute,
   AuthRoute: AuthRoute,
   CardRoute: CardRoute,
+  CaregivingRoute: CaregivingRoute,
   ConsentRoute: ConsentRoute,
   ContactsRoute: ContactsRoute,
   DiaryRoute: DiaryRoute,
@@ -662,6 +703,7 @@ const rootRouteChildren: RootRouteChildren = {
   WaterSleepRoute: WaterSleepRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
   CTokenRoute: CTokenRoute,
+  CaregiverInviteTokenRoute: CaregiverInviteTokenRoute,
   STokenRoute: STokenRoute,
   SettingsEmergencyNumbersRoute: SettingsEmergencyNumbersRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
