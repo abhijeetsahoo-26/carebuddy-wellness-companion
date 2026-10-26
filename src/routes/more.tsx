@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Users, History, Download, Shield, Database, FlaskConical } from "lucide-react";
+import { ChevronRight, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AppShell, PageTitle } from "@/components/AppShell";
@@ -23,6 +23,8 @@ export const Route = createFileRoute("/more")({
 });
 
 const links = [
+  { to: "/settings/reminders", label: "Reminders", icon: Bell },
+  { to: "/reminder-health", label: "Reminder health", icon: HeartPulse },
   { to: "/contacts", label: "Emergency contacts", icon: Users },
   { to: "/activity", label: "Activity", icon: History },
   { to: "/my-data", label: "Download or delete my data", icon: Download },
@@ -38,9 +40,12 @@ function More() {
   const demo = useQuery({
     queryKey: ["demo-count"],
     queryFn: async () => {
-      const { count, error } = await supabase.from("emergency_contacts").select("id", { count: "exact", head: true }).eq("is_demo", true);
-      if (error) throw error;
-      return count ?? 0;
+      const [a, b] = await Promise.all([
+        supabase.from("emergency_contacts").select("id", { count: "exact", head: true }).eq("is_demo", true),
+        supabase.from("medicines").select("id", { count: "exact", head: true }).eq("is_demo", true),
+      ]);
+      if (a.error ?? b.error) throw a.error ?? b.error;
+      return (a.count ?? 0) + (b.count ?? 0);
     },
   });
   const hasDemo = (demo.data ?? 0) > 0;
