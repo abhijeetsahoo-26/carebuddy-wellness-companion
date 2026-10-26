@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LogOut, Frown } from "lucide-react";
+import { LogOut, Frown, NotebookPen } from "lucide-react";
 import { TodayDoses } from "@/components/TodayDoses";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
