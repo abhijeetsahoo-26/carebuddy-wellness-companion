@@ -21,11 +21,25 @@ A personal medication, meal and symptom companion. **Not** a doctor, pharmacist,
 | `consents` | consent version + timestamp. `has_consent()` gates inserts on health tables. |
 | `profiles` | onboarding answers + saved progress (`onboarding_step`, `onboarding_done`). |
 | `emergency_contacts` | name, phone, relationship, `is_demo`. |
+| `medicines` | the user's own entries from their doctor's plan; `times` are India-time clock times; archive = `archived_at`. |
+| `dose_logs` | one row per scheduled dose (UTC), unique per medicine+time; status pending/taken/skipped/late, `logged_at`, `snoozed_until`. |
+| `water_logs` | one row per glass. |
+| `reminder_settings` | on/off, quiet hours, last test sent/received. |
+| `push_subscriptions` | one row per browser/device that allowed notifications. |
+| `reminder_log` | every reminder attempt with status; unique `dedupe_key` stops double sends. |
 | `audit_log` | append-only; written only by the `write_audit(entity)` trigger. Attach it to medicines and Doctor's Plan tables when they are added. |
 
+## Reminders
+- `generate_doses()` (SQL, idempotent) creates the next 2 days of doses; it runs on every reminder job and after medicine changes.
+- A managed schedule calls `POST /api/public/jobs/reminders` every 5 minutes. It sends "Time for your medicine" for due doses, a second push after 15 minutes if still unmarked, and snoozed reminders when the snooze ends. Quiet hours delay sends.
+- Notification buttons (Taken, Skip, Snooze 10/30) call `/api/public/push-action` with a signed, expiring token.
+- Push uses VAPID keys derived from the `VAPID_SEED` secret; button tokens use `REMINDER_ACTION_SECRET`.
+- `public/push-sw.js` is a push-only service worker (no offline caching). `public/manifest.webmanifest` makes the app installable.
+
 ## Demo data
-"Try with sample data" (More tab) inserts rows with `is_demo = true`, shown with a "Sample" badge, removed in one tap. SQL equivalent: `scripts/seed-demo.sql`.
+"Try with sample data" (More tab) inserts sample contacts, sample medicines and a week of sample doses with `is_demo = true`, shown with a "Sample" badge, removed in one tap. SQL equivalent: `scripts/seed-demo.sql`.
 
 ## How to test
-- `bunx vitest run` — routing and validation tests.
+- `bunx vitest run` — routing, validation and reminder-rule tests.
+- Reminders: open the published app on a phone, More → Reminders → turn on → Send test reminder → Reminder health.
 - Manual: sign up → consent → onboarding (skip steps) → More → Try sample data → Activity shows entries → Download my data → Delete account.
