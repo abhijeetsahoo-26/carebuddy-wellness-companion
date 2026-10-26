@@ -139,7 +139,6 @@ export const exportMyData = createServerFn({ method: "POST" })
       const { data: sig } = await sb.storage.from("prescriptions").createSignedUrl(v.attachment_path, 3600);
       uploads.push({ version_no: v.version_no, file_name: v.attachment_name, link_valid_1h: sig?.signedUrl ?? null });
     }
-    if (err) fail("Could not prepare your data.", err);
     return JSON.stringify(
       {
         exported_at: new Date().toISOString(),
