@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { planSchema, saveMealSchema, idSchema } from "./validation";
-import { checkMealNote, AI_DAILY_CAP } from "./meal-note";
+import { checkMealNote, AI_DAILY_CAP, checkMealIdeas, avoidTerms, GENERAL_TIPS, MEAL_IDEAS_CAP } from "./meal-note";
 
 function fail(msg: string, e?: unknown): never {
   if (e) console.error(msg, e);
@@ -84,4 +84,26 @@ export const restoreMeal = createServerFn({ method: "POST" })
     const { error } = await context.supabase.from("meals").update({ deleted_at: null }).eq("id", data.id);
     if (error) fail("Could not undo.", error);
     return { ok: true };
+  });
+
+// ---- Meal ideas (AI). Sends only diet rules, foods to avoid and allergies. ----
+export const getMealIdeas = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ kind: "ideas"; ideas: string[] } | { kind: "general"; tips: string[] } | { kind: "unavailable" }> => {
+    const sb = context.supabase;
+    const { data: v } = await sb.from("doctor_plan_versions").select("id").order("version_no", { ascending: false }).limit(1);
+    const diet = v?.[0] ? (await sb.from("doctor_plan_diet").select("diet_rules, foods_to_avoid").eq("version_id", v[0].id).maybeSingle()).data : null;
+    const rules = diet?.diet_rules?.trim() ?? "";
+    if (!rules) return { kind: "general", tips: GENERAL_TIPS };
+    const { data: allowed } = await sb.rpc("claim_meal_idea_call", { _cap: MEAL_IDEAS_CAP });
+    if (!allowed) return { kind: "unavailable" };
+    const { data: prof } = await sb.from("profiles").select("allergies").eq("user_id", context.userId).maybeSingle();
+    const avoid = diet?.foods_to_avoid?.trim() ?? "";
+    const allergies = prof?.allergies?.trim() ?? "";
+    const { askMealIdeas } = await import("./meal-ai.server");
+    const raw = await askMealIdeas({ dietRules: rules, avoid, allergies });
+    const [meds, planMeds] = await Promise.all([sb.from("medicines").select("name, generic_name"), sb.from("doctor_plan_medicines").select("name")]);
+    const names = [...(meds.data ?? []).flatMap((m) => [m.name, m.generic_name ?? ""]), ...(planMeds.data ?? []).map((m) => m.name)];
+    const ideas = checkMealIdeas(raw, names, avoidTerms(avoid, allergies));
+    return ideas ? { kind: "ideas", ideas } : { kind: "unavailable" };
   });
