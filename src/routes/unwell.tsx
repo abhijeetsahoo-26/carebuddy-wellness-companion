@@ -141,7 +141,7 @@ function Unwell() {
         <Big pressed={d.self_harm === false} onClick={() => yesNo("self_harm")(false)}>No</Big>
       </div>
     )),
-    () => q("Your medicines and allergies", (
+    () => q("Your allergies", (
       <>
         <Reminder />
         <Button size="lg" className="mt-6 w-full" onClick={() => void finish(d)}>See what to do</Button>
@@ -165,23 +165,11 @@ function Big({ pressed, onClick, children }: { pressed?: boolean | undefined; on
 }
 
 function Reminder() {
+  // Medicine information in this flow comes only from the Doctor's Plan (shown on the result).
   const { data } = useAccount();
-  const meds = useQuery({
-    queryKey: ["medicines", "active-names"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("medicines").select("id, name, dose_amount, strength").is("archived_at", null).order("created_at");
-      if (error) throw error;
-      return data;
-    },
-  });
   return (
     <div className="space-y-4 rounded-2xl border bg-card p-5">
       <p className="text-sm text-muted-foreground">A reminder from what you saved. Read-only.</p>
-      <div>
-        <h3 className="text-lg font-semibold">Medicines you take</h3>
-        {meds.isLoading ? <p>Loading…</p> : !meds.data?.length ? <p className="text-muted-foreground">None saved.</p> :
-          <ul className="mt-1 list-disc pl-6">{meds.data.map((m) => <li key={m.id}>{m.name}{m.dose_amount ? ` · ${m.dose_amount}` : ""}{m.strength ? ` · ${m.strength}` : ""}</li>)}</ul>}
-      </div>
       <div>
         <h3 className="text-lg font-semibold">Allergies</h3>
         <p className="whitespace-pre-wrap">{data?.profile?.allergies || "None saved."}</p>
