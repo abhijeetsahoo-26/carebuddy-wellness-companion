@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { planSchema, saveMealSchema, idSchema } from "./validation";
 import { checkMealNote, AI_DAILY_CAP } from "./meal-note";
@@ -20,7 +22,7 @@ export const saveDoctorPlan = createServerFn({ method: "POST" })
   });
 
 // ---- Meals ----
-async function writeNote(sb: Parameters<Parameters<typeof saveMeal.handler>[0]>[0]["context"]["supabase"], id: string, text: string) {
+async function writeNote(sb: SupabaseClient<Database>, id: string, text: string) {
   let note: string | null = null;
   const { data: allowed } = await sb.rpc("claim_ai_call", { _cap: AI_DAILY_CAP });
   if (allowed) {
