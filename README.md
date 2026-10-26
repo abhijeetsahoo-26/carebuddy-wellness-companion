@@ -1,29 +1,31 @@
-# Welcome to your Lovable project
+# CareBuddy
 
-This project was built with [Lovable](https://lovable.dev).
+A personal medication, meal and symptom companion. **Not** a doctor, pharmacist, diagnosis tool, medical device or emergency service.
 
-## Build with Lovable
+## Setup
+1. `bun install`
+2. `bun run dev` — the backend (Lovable Cloud) is already connected through `.env`.
+3. Sign up with email or Google. New users accept the privacy notice, then go through onboarding.
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+## Architecture
+- TanStack Start (React 19, TypeScript strict), Tailwind v4 tokens in `src/styles.css`.
+- `src/components/AppShell.tsx` — sign-in / consent / onboarding gate, bottom tabs, Emergency button, footer.
+- `src/lib/validation.ts` — zod schemas shared by forms and server functions.
+- `src/lib/carebuddy.functions.ts` — all writes, export and account deletion (server functions, `requireSupabaseAuth`).
+- `src/lib/errors.ts` — central friendly error messages; `src/components/States.tsx` — loading/empty/error states.
+- Reads use the browser client and are scoped by Row Level Security.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+## Tables (all with RLS, `user_id`, `created_at`, `updated_at`)
+| Table | Purpose |
+|---|---|
+| `consents` | consent version + timestamp. `has_consent()` gates inserts on health tables. |
+| `profiles` | onboarding answers + saved progress (`onboarding_step`, `onboarding_done`). |
+| `emergency_contacts` | name, phone, relationship, `is_demo`. |
+| `audit_log` | append-only; written only by the `write_audit(entity)` trigger. Attach it to medicines and Doctor's Plan tables when they are added. |
 
-## Development
+## Demo data
+"Try with sample data" (More tab) inserts rows with `is_demo = true`, shown with a "Sample" badge, removed in one tap. SQL equivalent: `scripts/seed-demo.sql`.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+## How to test
+- `bunx vitest run` — routing and validation tests.
+- Manual: sign up → consent → onboarding (skip steps) → More → Try sample data → Activity shows entries → Download my data → Delete account.

@@ -10,18 +10,29 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConsentRouteImport } from './routes/consent'
+import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as MealsRouteImport } from './routes/meals'
 import { Route as MedicinesRouteImport } from './routes/medicines'
+import { Route as MoreRouteImport } from './routes/more'
+import { Route as MyDataRouteImport } from './routes/my-data'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PlanRouteImport } from './routes/plan'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as UnwellRouteImport } from './routes/unwell'
+import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ActivityRoute = ActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -32,6 +43,11 @@ const AuthRoute = AuthRouteImport.update({
 const ConsentRoute = ConsentRouteImport.update({
   id: '/consent',
   path: '/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactsRoute = ContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmergencyRoute = EmergencyRouteImport.update({
@@ -49,6 +65,16 @@ const MedicinesRoute = MedicinesRouteImport.update({
   path: '/medicines',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MoreRoute = MoreRouteImport.update({
+  id: '/more',
+  path: '/more',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyDataRoute = MyDataRouteImport.update({
+  id: '/my-data',
+  path: '/my-data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -59,92 +85,144 @@ const PlanRoute = PlanRouteImport.update({
   path: '/plan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnwellRoute = UnwellRouteImport.update({
   id: '/unwell',
   path: '/unwell',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WhatWeStoreRoute = WhatWeStoreRouteImport.update({
+  id: '/what-we-store',
+  path: '/what-we-store',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
+  '/contacts': typeof ContactsRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
+  '/more': typeof MoreRoute
+  '/my-data': typeof MyDataRoute
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
+  '/privacy': typeof PrivacyRoute
   '/unwell': typeof UnwellRoute
+  '/what-we-store': typeof WhatWeStoreRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
+  '/contacts': typeof ContactsRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
+  '/more': typeof MoreRoute
+  '/my-data': typeof MyDataRoute
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
+  '/privacy': typeof PrivacyRoute
   '/unwell': typeof UnwellRoute
+  '/what-we-store': typeof WhatWeStoreRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
+  '/contacts': typeof ContactsRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
+  '/more': typeof MoreRoute
+  '/my-data': typeof MyDataRoute
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
+  '/privacy': typeof PrivacyRoute
   '/unwell': typeof UnwellRoute
+  '/what-we-store': typeof WhatWeStoreRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/activity'
     | '/auth'
     | '/consent'
+    | '/contacts'
     | '/emergency'
     | '/meals'
     | '/medicines'
+    | '/more'
+    | '/my-data'
     | '/onboarding'
     | '/plan'
+    | '/privacy'
     | '/unwell'
+    | '/what-we-store'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/activity'
     | '/auth'
     | '/consent'
+    | '/contacts'
     | '/emergency'
     | '/meals'
     | '/medicines'
+    | '/more'
+    | '/my-data'
     | '/onboarding'
     | '/plan'
+    | '/privacy'
     | '/unwell'
+    | '/what-we-store'
   id:
     | '__root__'
     | '/'
+    | '/activity'
     | '/auth'
     | '/consent'
+    | '/contacts'
     | '/emergency'
     | '/meals'
     | '/medicines'
+    | '/more'
+    | '/my-data'
     | '/onboarding'
     | '/plan'
+    | '/privacy'
     | '/unwell'
+    | '/what-we-store'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActivityRoute: typeof ActivityRoute
   AuthRoute: typeof AuthRoute
   ConsentRoute: typeof ConsentRoute
+  ContactsRoute: typeof ContactsRoute
   EmergencyRoute: typeof EmergencyRoute
   MealsRoute: typeof MealsRoute
   MedicinesRoute: typeof MedicinesRoute
+  MoreRoute: typeof MoreRoute
+  MyDataRoute: typeof MyDataRoute
   OnboardingRoute: typeof OnboardingRoute
   PlanRoute: typeof PlanRoute
+  PrivacyRoute: typeof PrivacyRoute
   UnwellRoute: typeof UnwellRoute
+  WhatWeStoreRoute: typeof WhatWeStoreRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -154,6 +232,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/activity': {
+      id: '/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof ActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -168,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/consent'
       fullPath: '/consent'
       preLoaderRoute: typeof ConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contacts': {
+      id: '/contacts'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof ContactsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/emergency': {
@@ -191,6 +283,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MedicinesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/more': {
+      id: '/more'
+      path: '/more'
+      fullPath: '/more'
+      preLoaderRoute: typeof MoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-data': {
+      id: '/my-data'
+      path: '/my-data'
+      fullPath: '/my-data'
+      preLoaderRoute: typeof MyDataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -205,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unwell': {
       id: '/unwell'
       path: '/unwell'
@@ -212,19 +325,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnwellRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/what-we-store': {
+      id: '/what-we-store'
+      path: '/what-we-store'
+      fullPath: '/what-we-store'
+      preLoaderRoute: typeof WhatWeStoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActivityRoute: ActivityRoute,
   AuthRoute: AuthRoute,
   ConsentRoute: ConsentRoute,
+  ContactsRoute: ContactsRoute,
   EmergencyRoute: EmergencyRoute,
   MealsRoute: MealsRoute,
   MedicinesRoute: MedicinesRoute,
+  MoreRoute: MoreRoute,
+  MyDataRoute: MyDataRoute,
   OnboardingRoute: OnboardingRoute,
   PlanRoute: PlanRoute,
+  PrivacyRoute: PrivacyRoute,
   UnwellRoute: UnwellRoute,
+  WhatWeStoreRoute: WhatWeStoreRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
