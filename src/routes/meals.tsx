@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Lightbulb, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { EmptyState, ErrorState, LoadingState } from "@/components/States";
 import { supabase } from "@/integrations/supabase/client";
-import { saveMeal, deleteMeal, restoreMeal } from "@/lib/plan.functions";
+import { saveMeal, deleteMeal, restoreMeal, getMealIdeas } from "@/lib/plan.functions";
 import { MEAL_TYPES, mealSchema, firstIssue } from "@/lib/validation";
 import { MEAL_NOTE_UNAVAILABLE, DIET_FIRST, IDEAS_UNAVAILABLE } from "@/lib/meal-note";
 import { showError } from "@/lib/errors";
