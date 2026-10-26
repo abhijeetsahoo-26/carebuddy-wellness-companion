@@ -28,14 +28,15 @@ export const Route = createFileRoute("/api/public/push-action")({
           return Response.json({ ok: true });
         }
 
-        const q = supabaseAdmin.from("dose_logs");
-        const scope = <T extends { eq: (c: string, v: string) => T }>(x: T) => x.eq("id", claims.id).eq("user_id", claims.u).eq("status", "pending");
+        let patch: { status?: "taken" | "skipped"; logged_at?: string; snoozed_until: string | null };
         if (a === "taken" || a === "skip") {
-          await scope(q.update({ status: a === "taken" ? "taken" : "skipped", logged_at: now, snoozed_until: null }) as never);
+          patch = { status: a === "taken" ? "taken" : "skipped", logged_at: now, snoozed_until: null };
         } else if (a === "snooze10" || a === "snooze30") {
-          const until = new Date(Date.now() + (a === "snooze10" ? 10 : 30) * 60e3).toISOString();
-          await scope(q.update({ snoozed_until: until }) as never);
+          patch = { snoozed_until: new Date(Date.now() + (a === "snooze10" ? 10 : 30) * 60e3).toISOString() };
+        } else {
+          return Response.json({ ok: true });
         }
+        await supabaseAdmin.from("dose_logs").update(patch).eq("id", claims.id).eq("user_id", claims.u).eq("status", "pending");
         return Response.json({ ok: true });
       },
     },

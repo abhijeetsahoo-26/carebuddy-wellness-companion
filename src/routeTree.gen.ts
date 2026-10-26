@@ -24,6 +24,8 @@ import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
+import { Route as ApiPublicPushActionRouteImport } from './routes/api/public/push-action'
+import { Route as ApiPublicJobsRemindersRouteImport } from './routes/api/public/jobs/reminders'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -100,6 +102,16 @@ const WhatWeStoreRoute = WhatWeStoreRouteImport.update({
   path: '/what-we-store',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPushActionRoute = ApiPublicPushActionRouteImport.update({
+  id: '/api/public/push-action',
+  path: '/api/public/push-action',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicJobsRemindersRoute = ApiPublicJobsRemindersRouteImport.update({
+  id: '/api/public/jobs/reminders',
+  path: '/api/public/jobs/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -117,6 +129,8 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/api/public/push-action': typeof ApiPublicPushActionRoute
+  '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -134,6 +148,8 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/api/public/push-action': typeof ApiPublicPushActionRoute
+  '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,6 +168,8 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/api/public/push-action': typeof ApiPublicPushActionRoute
+  '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,6 +189,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/unwell'
     | '/what-we-store'
+    | '/api/public/push-action'
+    | '/api/public/jobs/reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,6 +208,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/unwell'
     | '/what-we-store'
+    | '/api/public/push-action'
+    | '/api/public/jobs/reminders'
   id:
     | '__root__'
     | '/'
@@ -205,6 +227,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/unwell'
     | '/what-we-store'
+    | '/api/public/push-action'
+    | '/api/public/jobs/reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,6 +247,8 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   UnwellRoute: typeof UnwellRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
+  ApiPublicPushActionRoute: typeof ApiPublicPushActionRoute
+  ApiPublicJobsRemindersRoute: typeof ApiPublicJobsRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -332,6 +358,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhatWeStoreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/push-action': {
+      id: '/api/public/push-action'
+      path: '/api/public/push-action'
+      fullPath: '/api/public/push-action'
+      preLoaderRoute: typeof ApiPublicPushActionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/jobs/reminders': {
+      id: '/api/public/jobs/reminders'
+      path: '/api/public/jobs/reminders'
+      fullPath: '/api/public/jobs/reminders'
+      preLoaderRoute: typeof ApiPublicJobsRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -351,6 +391,8 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   UnwellRoute: UnwellRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
+  ApiPublicPushActionRoute: ApiPublicPushActionRoute,
+  ApiPublicJobsRemindersRoute: ApiPublicJobsRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
