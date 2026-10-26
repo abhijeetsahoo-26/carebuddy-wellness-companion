@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { idSchema, saveAppointmentSchema, vitalSchema, waterGoalSchema, sleepSchema, cardPrefsSchema } from "./validation";
 import { istDate } from "./time";
+import { CARD_LINK_EXPIRY, DEFAULT_CARD_LINK_EXPIRY, cardLinkExpiresAt } from "./tracking";
 
 function fail(msg: string, e?: unknown): never {
   if (e) console.error(msg, e);

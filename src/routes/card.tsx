@@ -40,6 +40,7 @@ function Card() {
   const revoke = useServerFn(revokeCardLinks);
   const ref = useRef<HTMLDivElement>(null);
   const [newLink, setNewLink] = useState<string | null>(null);
+  const [expiry, setExpiry] = useState<CardLinkExpiry>(DEFAULT_CARD_LINK_EXPIRY);
   const account = useAccount();
   const q = useQuery({
     queryKey: ["card"],
@@ -47,11 +48,11 @@ function Card() {
       const [m, c, t] = await Promise.all([
         supabase.from("medicines").select("name, strength, dose_amount").is("archived_at", null).order("created_at"),
         supabase.from("emergency_contacts").select("name, phone, relationship").order("created_at"),
-        supabase.from("emergency_card_tokens").select("id, created_at").is("revoked_at", null),
+        supabase.from("emergency_card_tokens").select("id, created_at, expires_at").is("revoked_at", null),
       ]);
       const err = m.error ?? c.error ?? t.error;
       if (err) throw err;
-      return { meds: m.data ?? [], contacts: c.data ?? [], liveLinks: t.data ?? [] };
+      return { meds: m.data ?? [], contacts: c.data ?? [], liveLinks: (t.data ?? []).filter((l) => !l.expires_at || new Date(l.expires_at) > new Date()) };
     },
   });
   if (account.isLoading || q.isLoading) return <LoadingState />;
@@ -81,7 +82,7 @@ function Card() {
   }
   async function makeLink() {
     try {
-      const { token } = await create();
+      const { token } = await create({ data: { expiry } });
       setNewLink(`${window.location.origin}/c/${token}`);
       await qc.invalidateQueries({ queryKey: ["card"] });
     } catch (e) { showError(e); }
@@ -120,7 +121,15 @@ function Card() {
             <Button className="mt-2" variant="outline" onClick={() => navigator.clipboard.writeText(newLink).then(() => toast.success("Link copied"))}><Copy /> Copy link</Button>
           </div>
         )}
-        <p className="mt-3 text-lg">{live ? `Link is on (created ${formatDateTimeIST(q.data!.liveLinks[0]!.created_at)}).` : "Link is off."}</p>
+        <p className="mt-3 text-lg">{live ? `Link is on (created ${formatDateTimeIST(q.data!.liveLinks[0]!.created_at)}). ${q.data!.liveLinks[0]!.expires_at ? `Expires ${formatDateTimeIST(q.data!.liveLinks[0]!.expires_at)}.` : "No expiry: works until you turn it off."}` : "Link is off."}</p>
+        <Label htmlFor="card-expiry" className="mt-3 block text-lg">New link lasts</Label>
+        <select id="card-expiry" value={expiry} onChange={(e) => setExpiry(e.target.value as CardLinkExpiry)}
+          className="mt-1 min-h-12 w-full rounded-xl border bg-background px-3 text-lg">
+          <option value="1">1 day</option>
+          <option value="7">7 days</option>
+          <option value="30">30 days</option>
+          <option value="off">Until I turn it off</option>
+        </select>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <Button size="lg" onClick={makeLink}><Link2 /> {live ? "Make a new link" : "Create a share link"}</Button>
           {live && <Button size="lg" variant="outline" onClick={stopLink}><Link2Off /> Turn off link</Button>}
