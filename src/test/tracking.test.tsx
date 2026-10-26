@@ -55,7 +55,7 @@ describe("weekly insights", () => {
     });
     if (!r.enough) throw new Error("expected enough");
     expect(r.adherencePct).toBe(79); // 11 of 14
-    expect(r.notMarked.night).toBe(3);
+    expect(r.notMarked["night"]).toBe(3);
     expect(r.avgWater).toBe(6);
     expect(r.avgSleep).toBe(7);
     expect(r.topSymptoms[0]).toEqual({ name: "Headache", days: 2 });
