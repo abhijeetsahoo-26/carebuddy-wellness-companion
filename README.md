@@ -55,3 +55,8 @@ A personal medication, meal and symptom companion. **Not** a doctor, pharmacist,
 - `/diary`: timeline, manual entries, notes edits, delete with Undo (soft delete); shows that day's meals and taken doses.
 - `/emergency` and `/settings/emergency-numbers`: numbers from `emergency_directory`; dialer only, never auto-dial.
 - Tests: `src/test/unwell-decision.test.tsx` covers every red flag.
+
+## Tracking (refills, appointments, vitals, water/sleep, insights, emergency card)
+- Tables: `appointments`, `vitals`, `hydration_logs` (daily water goal), `sleep_logs`, `emergency_card_tokens`; new medicine columns `tablets_remaining`, `tablets_per_dose`, `missed_dose_instruction`.
+- Screens: `/appointments`, `/vitals`, `/water-sleep`, `/insights`, `/card`, public `/c/<token>`.
+- Tests: `src/test/tracking.test.tsx` (refill count, streak, insights, diary questions).

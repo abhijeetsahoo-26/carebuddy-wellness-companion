@@ -27,3 +27,7 @@
 - Unwell triage is the pure `decide()` in `src/lib/unwell.ts` (no AI); the server re-decides from the answers before saving. Emergency checks run first and always win. Why: deterministic, tested safety logic.
 - Diary, unwell-check and emergency-number server functions live in `src/lib/diary.functions.ts`. Why: grouped by feature.
 - `emergency_directory` rows with `user_id IS NULL` are shared defaults; a user's row with the same `key` overrides it for them only. `src/lib/directory.ts` keeps a built-in copy so Emergency works even if loading fails. Why: emergency numbers must always show.
+- Tablet counts change only in the `dose_logs_stock` trigger (Taken/Late deducts, going back restores `stock_deducted`); `applyDoseToStock()` in `src/lib/tracking.ts` mirrors it for tests. Why: every path (app, notification button, undo) stays consistent.
+- Refill/appointment pushes run in the reminder job, are claimed via `reminder_log.dedupe_key`, and use fixed titles from `PUSH_TITLES` / `push-sw.js`. Why: no duplicates, no health data on lock screen.
+- Streak, weekly insights and diary-question prefill are pure functions in `src/lib/tracking.ts`; insight wording states counts only, never causes or advice. Why: deterministic, tested, non-diagnostic.
+- Tracking server functions live in `src/lib/tracking.functions.ts`. Public emergency card reads go only through `public.get_emergency_card(token)` (hashed, revocable tokens, switched-on items only). Why: no-login access without exposing other data.
