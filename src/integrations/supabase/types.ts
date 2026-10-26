@@ -35,6 +35,48 @@ export type Database = {
         }
         Relationships: []
       }
+      appointments: {
+        Row: {
+          created_at: string
+          doctor: string
+          id: string
+          is_demo: boolean
+          location: string | null
+          notes: string | null
+          purpose: string | null
+          questions: string[]
+          starts_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doctor: string
+          id?: string
+          is_demo?: boolean
+          location?: string | null
+          notes?: string | null
+          purpose?: string | null
+          questions?: string[]
+          starts_at: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doctor?: string
+          id?: string
+          is_demo?: boolean
+          location?: string | null
+          notes?: string | null
+          purpose?: string | null
+          questions?: string[]
+          starts_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -279,6 +321,7 @@ export type Database = {
           scheduled_at: string
           snoozed_until: string | null
           status: string
+          stock_deducted: number
           updated_at: string
           user_id: string
         }
@@ -291,6 +334,7 @@ export type Database = {
           scheduled_at: string
           snoozed_until?: string | null
           status?: string
+          stock_deducted?: number
           updated_at?: string
           user_id: string
         }
@@ -303,6 +347,7 @@ export type Database = {
           scheduled_at?: string
           snoozed_until?: string | null
           status?: string
+          stock_deducted?: number
           updated_at?: string
           user_id?: string
         }
@@ -315,6 +360,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      emergency_card_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          revoked_at: string | null
+          token_hash: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          revoked_at?: string | null
+          token_hash: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          revoked_at?: string | null
+          token_hash?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       emergency_contacts: {
         Row: {
@@ -382,6 +454,36 @@ export type Database = {
         }
         Relationships: []
       }
+      hydration_logs: {
+        Row: {
+          created_at: string
+          day: string
+          goal_glasses: number | null
+          id: string
+          is_demo: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          goal_glasses?: number | null
+          id?: string
+          is_demo?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          goal_glasses?: number | null
+          id?: string
+          is_demo?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meals: {
         Row: {
           ai_note: string | null
@@ -435,11 +537,15 @@ export type Database = {
           generic_name: string | null
           id: string
           is_demo: boolean
+          missed_dose_instruction: string | null
           name: string
           notes: string | null
           prescribed_by: string | null
           start_date: string
+          stock_set_at: string | null
           strength: string | null
+          tablets_per_dose: number
+          tablets_remaining: number | null
           times: string[]
           updated_at: string
           user_id: string
@@ -454,11 +560,15 @@ export type Database = {
           generic_name?: string | null
           id?: string
           is_demo?: boolean
+          missed_dose_instruction?: string | null
           name: string
           notes?: string | null
           prescribed_by?: string | null
           start_date?: string
+          stock_set_at?: string | null
           strength?: string | null
+          tablets_per_dose?: number
+          tablets_remaining?: number | null
           times?: string[]
           updated_at?: string
           user_id: string
@@ -473,11 +583,15 @@ export type Database = {
           generic_name?: string | null
           id?: string
           is_demo?: boolean
+          missed_dose_instruction?: string | null
           name?: string
           notes?: string | null
           prescribed_by?: string | null
           start_date?: string
+          stock_set_at?: string | null
           strength?: string | null
+          tablets_per_dose?: number
+          tablets_remaining?: number | null
           times?: string[]
           updated_at?: string
           user_id?: string
@@ -488,6 +602,7 @@ export type Database = {
         Row: {
           age_group: string | null
           allergies: string | null
+          card_prefs: Json
           conditions: string | null
           created_at: string
           diet: string | null
@@ -505,6 +620,7 @@ export type Database = {
         Insert: {
           age_group?: string | null
           allergies?: string | null
+          card_prefs?: Json
           conditions?: string | null
           created_at?: string
           diet?: string | null
@@ -522,6 +638,7 @@ export type Database = {
         Update: {
           age_group?: string | null
           allergies?: string | null
+          card_prefs?: Json
           conditions?: string | null
           created_at?: string
           diet?: string | null
@@ -651,6 +768,36 @@ export type Database = {
         }
         Relationships: []
       }
+      sleep_logs: {
+        Row: {
+          created_at: string
+          hours: number
+          id: string
+          is_demo: boolean
+          night: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hours: number
+          id?: string
+          is_demo?: boolean
+          night: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hours?: number
+          id?: string
+          is_demo?: boolean
+          night?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       symptom_entries: {
         Row: {
           created_at: string
@@ -737,6 +884,48 @@ export type Database = {
         }
         Relationships: []
       }
+      vitals: {
+        Row: {
+          created_at: string
+          id: string
+          is_demo: boolean
+          kind: string
+          measured_at: string
+          source: string
+          unit: string
+          updated_at: string
+          user_id: string
+          value: number
+          value2: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          kind: string
+          measured_at?: string
+          source?: string
+          unit: string
+          updated_at?: string
+          user_id: string
+          value: number
+          value2?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          kind?: string
+          measured_at?: string
+          source?: string
+          unit?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+          value2?: number | null
+        }
+        Relationships: []
+      }
       water_logs: {
         Row: {
           created_at: string
@@ -775,6 +964,7 @@ export type Database = {
         Returns: number
       }
       generate_my_doses: { Args: never; Returns: number }
+      get_emergency_card: { Args: { _token: string }; Returns: Json }
       has_consent: { Args: { _uid: string }; Returns: boolean }
       save_doctor_plan: { Args: { p: Json }; Returns: string }
     }

@@ -29,6 +29,13 @@
       "when": 1793002578875,
       "tag": "0003_unwell_diary_directory",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793003189440,
+      "tag": "0004_tracking_features",
+      "breakpoints": true
     }
   ]
 }
