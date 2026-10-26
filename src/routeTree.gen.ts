@@ -22,8 +22,10 @@ import { Route as MyDataRouteImport } from './routes/my-data'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ReminderHealthRouteImport } from './routes/reminder-health'
 import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
+import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
 import { Route as ApiPublicPushActionRouteImport } from './routes/api/public/push-action'
 import { Route as ApiPublicJobsRemindersRouteImport } from './routes/api/public/jobs/reminders'
 
@@ -92,6 +94,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReminderHealthRoute = ReminderHealthRouteImport.update({
+  id: '/reminder-health',
+  path: '/reminder-health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnwellRoute = UnwellRouteImport.update({
   id: '/unwell',
   path: '/unwell',
@@ -100,6 +107,11 @@ const UnwellRoute = UnwellRouteImport.update({
 const WhatWeStoreRoute = WhatWeStoreRouteImport.update({
   id: '/what-we-store',
   path: '/what-we-store',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRemindersRoute = SettingsRemindersRouteImport.update({
+  id: '/settings/reminders',
+  path: '/settings/reminders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicPushActionRoute = ApiPublicPushActionRouteImport.update({
@@ -127,8 +139,10 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
+  '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
 }
@@ -146,8 +160,10 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
+  '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
 }
@@ -166,8 +182,10 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
+  '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
 }
@@ -187,8 +205,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/privacy'
+    | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -206,8 +226,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/privacy'
+    | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
   id:
@@ -225,8 +247,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/privacy'
+    | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
   fileRoutesById: FileRoutesById
@@ -245,8 +269,10 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   PlanRoute: typeof PlanRoute
   PrivacyRoute: typeof PrivacyRoute
+  ReminderHealthRoute: typeof ReminderHealthRoute
   UnwellRoute: typeof UnwellRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
+  SettingsRemindersRoute: typeof SettingsRemindersRoute
   ApiPublicPushActionRoute: typeof ApiPublicPushActionRoute
   ApiPublicJobsRemindersRoute: typeof ApiPublicJobsRemindersRoute
 }
@@ -344,6 +370,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reminder-health': {
+      id: '/reminder-health'
+      path: '/reminder-health'
+      fullPath: '/reminder-health'
+      preLoaderRoute: typeof ReminderHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unwell': {
       id: '/unwell'
       path: '/unwell'
@@ -356,6 +389,13 @@ declare module '@tanstack/react-router' {
       path: '/what-we-store'
       fullPath: '/what-we-store'
       preLoaderRoute: typeof WhatWeStoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/reminders': {
+      id: '/settings/reminders'
+      path: '/settings/reminders'
+      fullPath: '/settings/reminders'
+      preLoaderRoute: typeof SettingsRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/push-action': {
@@ -389,8 +429,10 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   PlanRoute: PlanRoute,
   PrivacyRoute: PrivacyRoute,
+  ReminderHealthRoute: ReminderHealthRoute,
   UnwellRoute: UnwellRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
+  SettingsRemindersRoute: SettingsRemindersRoute,
   ApiPublicPushActionRoute: ApiPublicPushActionRoute,
   ApiPublicJobsRemindersRoute: ApiPublicJobsRemindersRoute,
 }
