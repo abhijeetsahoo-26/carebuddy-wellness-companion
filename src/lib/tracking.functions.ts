@@ -94,13 +94,14 @@ async function sha256Hex(s: string) {
 // Creates a fresh link and revokes any older ones. Only a hash is stored, so the link is shown once.
 export const createCardLink = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((d: unknown) => z.object({ expiry: z.enum(CARD_LINK_EXPIRY).default(DEFAULT_CARD_LINK_EXPIRY) }).parse(d ?? {}))
+  .handler(async ({ data, context }) => {
     const sb = context.supabase;
     const bytes = crypto.getRandomValues(new Uint8Array(32));
     const token = btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
     const nowIso = new Date().toISOString();
     await sb.from("emergency_card_tokens").update({ revoked_at: nowIso }).is("revoked_at", null);
-    const { error } = await sb.from("emergency_card_tokens").insert({ user_id: context.userId, token_hash: await sha256Hex(token) });
+    const { error } = await sb.from("emergency_card_tokens").insert({ user_id: context.userId, token_hash: await sha256Hex(token), expires_at: cardLinkExpiresAt(data.expiry) });
     if (error) fail("Could not create the link.", error);
     return { token };
   });

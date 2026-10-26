@@ -169,3 +169,12 @@ export function questionsFromDiary(entries: { occurred_at: string; symptoms: str
   }
   return [...by].map(([name, ds]) => `${name}: ${[...ds].join(", ")}`);
 }
+
+
+/** Emergency card link lifetimes. "off" = until the user turns it off. Default 30 days. */
+export const CARD_LINK_EXPIRY = ["1", "7", "30", "off"] as const;
+export type CardLinkExpiry = (typeof CARD_LINK_EXPIRY)[number];
+export const DEFAULT_CARD_LINK_EXPIRY: CardLinkExpiry = "30";
+export function cardLinkExpiresAt(choice: CardLinkExpiry, now: Date = new Date()): string | null {
+  return choice === "off" ? null : new Date(now.getTime() + Number(choice) * 86400e3).toISOString();
+}
