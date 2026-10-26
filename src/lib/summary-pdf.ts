@@ -33,7 +33,7 @@ export function summaryPdfBytes(doc: SummaryDoc): ArrayBuffer {
     autoTable(pdf, {
       startY: y, head: [head.map(safe)], body: body.map((r) => r.map(safe)), margin: { left: M, right: M, bottom: 20 },
       styles: { fontSize: 9, cellPadding: 1.5 }, headStyles: { fillColor: [46, 125, 90] },
-      columnStyles: small == null ? undefined : { [small]: { fontSize: 7, textColor: [100, 100, 100] } },
+      columnStyles: small == null ? {} : { [small]: { fontSize: 7, textColor: [100, 100, 100] } },
     });
     y = (pdf as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
   };
