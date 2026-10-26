@@ -3,7 +3,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { inQuietHours, SECOND_REMINDER_MIN } from "./time";
-import { REMINDER_TITLE, sendPush, signAction } from "./push.server";
+import { REMINDER_TITLE, PUSH_TITLES, sendPush, signAction } from "./push.server";
+import { supplyStatus } from "./tracking";
 
 type Admin = SupabaseClient<Database>;
 const LOOKBACK_H = 12;
@@ -40,6 +41,46 @@ export async function runReminderJob(admin: Admin, now = new Date()) {
   const { data: settings } = await admin.from("reminder_settings").select("user_id, quiet_start, quiet_end").eq("enabled", true);
   if (!settings?.length) return { sent: 0 };
   const byUser = new Map(settings.map((s) => [s.user_id, s]));
+  const extra = await runSupplyAndAppointments(admin, byUser, now);
+  const r = await runDoseReminders(admin, byUser, now);
+  return { sent: r.sent + extra };
+}
+
+type Settings = Map<string, { user_id: string; quiet_start: string | null; quiet_end: string | null }>;
+
+// Refill (once per stock count the user entered) and appointment pushes (day before, 2 hours before).
+async function runSupplyAndAppointments(admin: Admin, byUser: Settings, now: Date) {
+  let sent = 0;
+  const users = [...byUser.keys()];
+  const { data: meds } = await admin.from("medicines")
+    .select("id, user_id, tablets_remaining, tablets_per_dose, times, stock_set_at")
+    .in("user_id", users).eq("is_demo", false).is("archived_at", null).not("tablets_remaining", "is", null);
+  for (const m of meds ?? []) {
+    const s = byUser.get(m.user_id)!;
+    if (inQuietHours(now, s.quiet_start, s.quiet_end)) continue;
+    const st = supplyStatus(Number(m.tablets_remaining), Number(m.tablets_per_dose), m.times.length);
+    if (st !== "low" && st !== "out") continue;
+    const logId = await claim(admin, { user_id: m.user_id, kind: "refill", dedupe_key: `refill:${m.id}:${m.stock_set_at ?? "initial"}`, scheduled_for: now.toISOString() });
+    if (!logId) continue;
+    if ((await deliverToUser(admin, m.user_id, logId, { type: "refill", title: PUSH_TITLES.refill, tag: `refill-${m.id}` })) === "sent") sent++;
+  }
+  const { data: appts } = await admin.from("appointments").select("id, user_id, starts_at")
+    .in("user_id", users).eq("is_demo", false)
+    .gt("starts_at", now.toISOString()).lte("starts_at", new Date(now.getTime() + 24 * 3600e3).toISOString());
+  for (const a of appts ?? []) {
+    const s = byUser.get(a.user_id)!;
+    const msLeft = new Date(a.starts_at).getTime() - now.getTime();
+    const kind = msLeft <= 2 * 3600e3 ? "appt_2h" : "appt_day";
+    // Appointment pushes are time-critical, but quiet hours still hold back the day-before one.
+    if (kind === "appt_day" && inQuietHours(now, s.quiet_start, s.quiet_end)) continue;
+    const logId = await claim(admin, { user_id: a.user_id, kind, dedupe_key: `${kind}:${a.id}:${a.starts_at}`, scheduled_for: a.starts_at });
+    if (!logId) continue;
+    if ((await deliverToUser(admin, a.user_id, logId, { type: "appointment", title: PUSH_TITLES.appointment, tag: `appt-${a.id}` })) === "sent") sent++;
+  }
+  return sent;
+}
+
+async function runDoseReminders(admin: Admin, byUser: Settings, now: Date) {
 
   const { data: doses, error } = await admin
     .from("dose_logs")

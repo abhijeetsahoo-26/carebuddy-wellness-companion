@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, NotebookPen, PhoneCall, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse } from "lucide-react";
+import { ChevronRight, NotebookPen, PhoneCall, CalendarClock, Activity as ActivityIcon, Droplets, BarChart3, Contact, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AppShell, PageTitle } from "@/components/AppShell";
@@ -25,7 +25,12 @@ export const Route = createFileRoute("/more")({
 const links = [
   { to: "/settings/reminders", label: "Reminders", icon: Bell },
   { to: "/reminder-health", label: "Reminder health", icon: HeartPulse },
+  { to: "/insights", label: "This week", icon: BarChart3 },
+  { to: "/appointments", label: "Appointments", icon: CalendarClock },
+  { to: "/vitals", label: "My numbers (weight, BP, sugar, temperature)", icon: ActivityIcon },
+  { to: "/water-sleep", label: "Water and sleep", icon: Droplets },
   { to: "/diary", label: "Symptom diary", icon: NotebookPen },
+  { to: "/card", label: "Emergency card", icon: Contact },
   { to: "/contacts", label: "Emergency contacts", icon: Users },
   { to: "/settings/emergency-numbers", label: "Emergency numbers", icon: PhoneCall },
   { to: "/activity", label: "Activity", icon: History },

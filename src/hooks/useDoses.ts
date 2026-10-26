@@ -9,7 +9,7 @@ export type DoseRow = {
   logged_at: string | null;
   snoozed_until: string | null;
   is_demo: boolean;
-  medicine: { id: string; name: string; dose_amount: string | null; food: string; is_demo: boolean } | null;
+  medicine: { id: string; name: string; dose_amount: string | null; food: string; is_demo: boolean; missed_dose_instruction: string | null } | null;
 };
 
 /** Doses from `daysBack` India-time days ago through the end of today. */
@@ -22,7 +22,7 @@ export function useDoses(daysBack = 0) {
       const to = new Date(istDayStartUTC(today).getTime() + 86400e3);
       const { data, error } = await supabase
         .from("dose_logs")
-        .select("id, scheduled_at, status, logged_at, snoozed_until, is_demo, medicine:medicines(id, name, dose_amount, food, is_demo)")
+        .select("id, scheduled_at, status, logged_at, snoozed_until, is_demo, medicine:medicines(id, name, dose_amount, food, is_demo, missed_dose_instruction)")
         .gte("scheduled_at", from.toISOString())
         .lt("scheduled_at", to.toISOString())
         .order("scheduled_at");

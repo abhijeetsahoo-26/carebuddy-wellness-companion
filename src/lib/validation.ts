@@ -95,6 +95,13 @@ export const medicineSchema = z
     end_date: isoDate.optional().nullable().transform((v) => v || null),
     prescribed_by: optText(100),
     notes: optText(1000),
+    tablets_remaining: z.union([z.number(), z.string()]).optional().nullable()
+      .transform((v) => (v === "" || v === null || v === undefined ? null : Number(v)))
+      .refine((v) => v === null || (Number.isFinite(v) && v >= 0 && v <= 10000), "Please enter how many are left, or leave it empty"),
+    tablets_per_dose: z.union([z.number(), z.string()]).optional()
+      .transform((v) => (v === "" || v === undefined ? 1 : Number(v)))
+      .refine((v) => Number.isFinite(v) && v > 0 && v <= 100, "Please enter how many you take each time"),
+    missed_dose_instruction: optText(500),
   })
   .refine((m) => !m.end_date || m.end_date >= m.start_date, { message: "End date must be on or after the start date", path: ["end_date"] });
 
@@ -190,4 +197,53 @@ export const directoryNumberSchema = z.object({
   key: z.string().regex(/^[a-z0-9_]{1,50}$/),
   label: z.string().trim().min(1).max(60),
   number: z.string().trim().regex(/^[0-9+]{2,15}$/, "Please enter digits only"),
+});
+
+// ---- Appointments, vitals, water goal, sleep, emergency card ----
+const pastOrNow = (msg = "The time can't be in the future") =>
+  z.string().datetime({ offset: true, message: "Please pick a date and time" }).refine((v) => new Date(v).getTime() <= Date.now() + 5 * 60e3, msg);
+
+export const appointmentSchema = z.object({
+  doctor: z.string().trim().min(1, "Please enter the doctor's name").max(100),
+  starts_at: z.string().datetime({ offset: true, message: "Please pick a date and time" }),
+  location: optText(200),
+  purpose: optText(200),
+  notes: optText(1000),
+  questions: z.array(z.string().trim().min(1).max(300)).max(30),
+});
+export const saveAppointmentSchema = z.object({ id: z.string().uuid().optional(), appointment: appointmentSchema });
+
+export const VITAL_KINDS = [
+  { value: "weight", label: "Weight", units: ["kg"] },
+  { value: "blood_pressure", label: "Blood pressure", units: ["mmHg"] },
+  { value: "sugar_fasting", label: "Blood sugar (fasting)", units: ["mg/dL"] },
+  { value: "sugar_after_meal", label: "Blood sugar (after meal)", units: ["mg/dL"] },
+  { value: "temperature", label: "Temperature", units: ["°C", "°F"] },
+] as const;
+const RANGES: Record<string, [number, number]> = { kg: [1, 400], mmHg: [20, 300], "mg/dL": [10, 1000], "°C": [30, 45], "°F": [86, 113] };
+export const vitalSchema = z.object({
+  kind: z.enum(["weight", "blood_pressure", "sugar_fasting", "sugar_after_meal", "temperature"]),
+  value: z.number({ message: "Please enter a number" }),
+  value2: z.number().nullable(),
+  unit: z.enum(["kg", "mmHg", "mg/dL", "°C", "°F"]),
+  measured_at: pastOrNow(),
+}).refine((v) => (VITAL_KINDS.find((k) => k.value === v.kind)!.units as readonly string[]).includes(v.unit), { message: "Please pick the unit", path: ["unit"] })
+  .refine((v) => { const [lo, hi] = RANGES[v.unit]!; return v.value >= lo && v.value <= hi && (v.value2 === null || (v.value2 >= lo && v.value2 <= hi)); }, { message: "That number looks like a typing mistake. Please check it.", path: ["value"] })
+  .refine((v) => v.kind !== "blood_pressure" || v.value2 !== null, { message: "Please enter both blood pressure numbers", path: ["value2"] });
+
+export const waterGoalSchema = z.object({ goal_glasses: z.number().int().min(1, "At least 1 glass").max(30, "Up to 30 glasses").nullable() });
+export const sleepSchema = z.object({
+  night: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Please pick a date"),
+  hours: z.number({ message: "Please enter hours" }).min(0).max(24, "Up to 24 hours"),
+});
+export const CARD_FIELDS = [
+  { key: "name", label: "Name" },
+  { key: "allergies", label: "Allergies" },
+  { key: "conditions", label: "Conditions" },
+  { key: "medicines", label: "Current medicines" },
+  { key: "doctor", label: "Doctor contact" },
+  { key: "contacts", label: "Emergency contacts" },
+] as const;
+export const cardPrefsSchema = z.object({
+  name: z.boolean(), allergies: z.boolean(), conditions: z.boolean(), medicines: z.boolean(), doctor: z.boolean(), contacts: z.boolean(),
 });

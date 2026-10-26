@@ -19,6 +19,7 @@ import { FOOD_OPTIONS, FORMS, medicineSchema, firstIssue } from "@/lib/validatio
 import { showError } from "@/lib/errors";
 import { adherence, istDate, istDayStartUTC, TZ } from "@/lib/time";
 import { useDoses } from "@/hooks/useDoses";
+import { supplyStatus, daysOfSupply, LOW_SUPPLY_TEXT, OUT_OF_SUPPLY_TEXT } from "@/lib/tracking";
 import type { Database } from "@/integrations/supabase/types";
 
 type Med = Database["public"]["Tables"]["medicines"]["Row"];
@@ -121,17 +122,33 @@ function MedCard({ m, onEdit, onArchive }: { m: Med; onEdit: () => void; onArchi
         ))}
       </dl>
       {m.notes && <p className="mt-2 text-muted-foreground">{m.notes}</p>}
+      <SupplyLine m={m} />
     </div>
   );
 }
 
-type FormState = { name: string; generic_name: string; strength: string; form: string; dose_amount: string; times: string[]; food: "with" | "without" | "any"; start_date: string; end_date: string; prescribed_by: string; notes: string };
+function SupplyLine({ m }: { m: Med }) {
+  if (m.tablets_remaining === null) return null;
+  const st = supplyStatus(Number(m.tablets_remaining), Number(m.tablets_per_dose), m.times.length);
+  const days = daysOfSupply(Number(m.tablets_remaining), Number(m.tablets_per_dose), m.times.length);
+  return (
+    <div className={`mt-3 rounded-xl p-3 ${st === "out" || st === "low" ? "border-2 border-primary bg-secondary" : "bg-secondary/50"}`} role={st === "out" ? "alert" : undefined}>
+      <p className="font-semibold">{Number(m.tablets_remaining)} left{days !== null && st !== "out" ? ` · about ${days} day${days === 1 ? "" : "s"}` : ""}</p>
+      {st === "low" && <p>{LOW_SUPPLY_TEXT}</p>}
+      {st === "out" && <p>{OUT_OF_SUPPLY_TEXT}</p>}
+    </div>
+  );
+}
+
+type FormState = { tablets_remaining: string; tablets_per_dose: string; missed_dose_instruction: string; name: string; generic_name: string; strength: string; form: string; dose_amount: string; times: string[]; food: "with" | "without" | "any"; start_date: string; end_date: string; prescribed_by: string; notes: string };
 
 function MedForm({ med, onDone }: { med: Med | null; onDone: () => void }) {
   const qc = useQueryClient();
   const save = useServerFn(saveMedicine);
   const [busy, setBusy] = useState(false);
   const [f, setF] = useState<FormState>({
+    tablets_remaining: med?.tablets_remaining?.toString() ?? "", tablets_per_dose: med?.tablets_per_dose?.toString() ?? "1",
+    missed_dose_instruction: med?.missed_dose_instruction ?? "",
     name: med?.name ?? "", generic_name: med?.generic_name ?? "", strength: med?.strength ?? "", form: med?.form ?? "",
     dose_amount: med?.dose_amount ?? "", times: med?.times ?? ["08:00"], food: (med?.food as FormState["food"]) ?? "any",
     start_date: med?.start_date ?? istDate(), end_date: med?.end_date ?? "", prescribed_by: med?.prescribed_by ?? "", notes: med?.notes ?? "",
@@ -194,6 +211,12 @@ function MedForm({ med, onDone }: { med: Med | null; onDone: () => void }) {
       </div>
       <div className="grid grid-cols-2 gap-3">{text("start_date", "Start date", "date")}{text("end_date", "End date (optional)", "date")}</div>
       {text("prescribed_by", "Prescribed by")}
+      <div className="grid grid-cols-2 gap-3">{text("tablets_remaining", "Tablets remaining (optional)", "number")}{text("tablets_per_dose", "Tablets per dose", "number")}</div>
+      <p className="text-sm text-muted-foreground">If you enter how many are left, CareBuddy counts down when you mark a dose Taken and reminds you to check your supply.</p>
+      <div className="space-y-2">
+        <Label htmlFor="m-missed" className="text-base">My doctor's instruction for a missed dose (optional)</Label>
+        <Textarea id="m-missed" className="text-base" value={f.missed_dose_instruction} onChange={(e) => set("missed_dose_instruction", e.target.value)} />
+      </div>
       <div className="space-y-2">
         <Label htmlFor="m-notes" className="text-base">Notes</Label>
         <Textarea id="m-notes" className="text-base" value={f.notes} onChange={(e) => set("notes", e.target.value)} />
