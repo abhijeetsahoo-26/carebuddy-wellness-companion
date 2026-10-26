@@ -492,6 +492,7 @@ export type Database = {
       emergency_card_tokens: {
         Row: {
           created_at: string
+          expires_at: string | null
           id: string
           revoked_at: string | null
           token_hash: string
@@ -500,6 +501,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          expires_at?: string | null
           id?: string
           revoked_at?: string | null
           token_hash: string
@@ -508,6 +510,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          expires_at?: string | null
           id?: string
           revoked_at?: string | null
           token_hash?: string
