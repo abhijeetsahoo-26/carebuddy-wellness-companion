@@ -311,6 +311,39 @@ export type Database = {
         }
         Relationships: []
       }
+      doctor_summaries: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          questions: string[]
+          range_from: string
+          range_to: string
+          sections: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          questions?: string[]
+          range_from: string
+          range_to: string
+          sections?: string[]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          questions?: string[]
+          range_from?: string
+          range_to?: string
+          sections?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
       dose_logs: {
         Row: {
           created_at: string
@@ -768,6 +801,86 @@ export type Database = {
         }
         Relationships: []
       }
+      share_link_views: {
+        Row: {
+          id: string
+          link_id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          link_id: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          link_id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "share_link_views_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "share_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      share_links: {
+        Row: {
+          created_at: string
+          expires_at: string
+          first_viewed_at: string | null
+          id: string
+          last_viewed_at: string | null
+          questions: string[]
+          range_from: string
+          range_to: string
+          revoked_at: string | null
+          sections: string[]
+          token_hash: string
+          updated_at: string
+          user_id: string
+          view_count: number
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          first_viewed_at?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          questions?: string[]
+          range_from: string
+          range_to: string
+          revoked_at?: string | null
+          sections?: string[]
+          token_hash: string
+          updated_at?: string
+          user_id: string
+          view_count?: number
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          first_viewed_at?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          questions?: string[]
+          range_from?: string
+          range_to?: string
+          revoked_at?: string | null
+          sections?: string[]
+          token_hash?: string
+          updated_at?: string
+          user_id?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
       sleep_logs: {
         Row: {
           created_at: string
@@ -966,6 +1079,7 @@ export type Database = {
       generate_my_doses: { Args: never; Returns: number }
       get_emergency_card: { Args: { _token: string }; Returns: Json }
       has_consent: { Args: { _uid: string }; Returns: boolean }
+      open_share_link: { Args: { _token: string }; Returns: Json }
       save_doctor_plan: { Args: { p: Json }; Returns: string }
     }
     Enums: {
