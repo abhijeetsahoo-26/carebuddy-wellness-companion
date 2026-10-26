@@ -2,7 +2,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { streamText } from "ai";
 
 // Lightest suitable model: a short nutrient note needs no large model.
-const MODEL = "openai/gpt-5.4-nano";
+const MODEL = "openai/gpt-6-luna";
 const INSTRUCTIONS =
   "You describe the main nutrients in a meal in simple, friendly words for an older adult. " +
   "Reply with at most 3 short lines. Mention only food nutrients (for example carbohydrates, protein, fibre, fat, vitamins). " +
