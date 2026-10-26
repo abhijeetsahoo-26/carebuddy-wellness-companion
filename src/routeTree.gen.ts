@@ -27,6 +27,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReminderHealthRouteImport } from './routes/reminder-health'
+import { Route as SummaryRouteImport } from './routes/summary'
 import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as VitalsRouteImport } from './routes/vitals'
 import { Route as WaterSleepRouteImport } from './routes/water-sleep'
@@ -128,6 +129,11 @@ const ReminderHealthRoute = ReminderHealthRouteImport.update({
   path: '/reminder-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SummaryRoute = SummaryRouteImport.update({
+  id: '/summary',
+  path: '/summary',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnwellRoute = UnwellRouteImport.update({
   id: '/unwell',
   path: '/unwell',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByTo {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/summary'
     | '/unwell'
     | '/vitals'
     | '/water-sleep'
@@ -322,6 +332,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/summary'
     | '/unwell'
     | '/vitals'
     | '/water-sleep'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/summary'
     | '/unwell'
     | '/vitals'
     | '/water-sleep'
@@ -383,6 +395,7 @@ export interface RootRouteChildren {
   PlanRoute: typeof PlanRoute
   PrivacyRoute: typeof PrivacyRoute
   ReminderHealthRoute: typeof ReminderHealthRoute
+  SummaryRoute: typeof SummaryRoute
   UnwellRoute: typeof UnwellRoute
   VitalsRoute: typeof VitalsRoute
   WaterSleepRoute: typeof WaterSleepRoute
@@ -523,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReminderHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/summary': {
+      id: '/summary'
+      path: '/summary'
+      fullPath: '/summary'
+      preLoaderRoute: typeof SummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unwell': {
       id: '/unwell'
       path: '/unwell'
@@ -615,6 +635,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlanRoute: PlanRoute,
   PrivacyRoute: PrivacyRoute,
   ReminderHealthRoute: ReminderHealthRoute,
+  SummaryRoute: SummaryRoute,
   UnwellRoute: UnwellRoute,
   VitalsRoute: VitalsRoute,
   WaterSleepRoute: WaterSleepRoute,

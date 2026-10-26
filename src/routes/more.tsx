@@ -26,6 +26,7 @@ const links = [
   { to: "/settings/reminders", label: "Reminders", icon: Bell },
   { to: "/reminder-health", label: "Reminder health", icon: HeartPulse },
   { to: "/insights", label: "This week", icon: BarChart3 },
+  { to: "/summary", label: "Summary for my doctor (PDF or link)", icon: FileText },
   { to: "/appointments", label: "Appointments", icon: CalendarClock },
   { to: "/vitals", label: "My numbers (weight, BP, sugar, temperature)", icon: ActivityIcon },
   { to: "/water-sleep", label: "Water and sleep", icon: Droplets },
