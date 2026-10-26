@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, NotebookPen, PhoneCall, CalendarClock, Activity as ActivityIcon, Droplets, BarChart3, Contact, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse, FileText } from "lucide-react";
+import { ChevronRight, NotebookPen, PhoneCall, CalendarClock, Activity as ActivityIcon, Droplets, BarChart3, Contact, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse, FileText, UserCheck, HeartHandshake, Leaf } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AppShell, PageTitle } from "@/components/AppShell";
@@ -33,6 +33,9 @@ const links = [
   { to: "/diary", label: "Symptom diary", icon: NotebookPen },
   { to: "/card", label: "Emergency card", icon: Contact },
   { to: "/contacts", label: "Emergency contacts", icon: Users },
+  { to: "/settings/caregivers", label: "Caregivers (who can see my updates)", icon: UserCheck },
+  { to: "/caregiving", label: "People I look after", icon: HeartHandshake },
+  { to: "/sick-day", label: "Sick-day mode", icon: Leaf },
   { to: "/settings/emergency-numbers", label: "Emergency numbers", icon: PhoneCall },
   { to: "/activity", label: "Activity", icon: History },
   { to: "/my-data", label: "Download or delete my data", icon: Download },

@@ -135,7 +135,7 @@ export const exportMyData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const sb = context.supabase;
-    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed, ap, vt, hy, sl, ct, pr, dsum, slinks, sviews] = await Promise.all([
+    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed, ap, vt, hy, sl, ct, pr, dsum, slinks, sviews, sick, cg, cglog, mine] = await Promise.all([
       sb.from("profiles").select("*").maybeSingle(),
       sb.from("consents").select("*"),
       sb.from("emergency_contacts").select("*"),
@@ -163,8 +163,12 @@ export const exportMyData = createServerFn({ method: "POST" })
       sb.from("doctor_summaries").select("*").order("created_at"),
       sb.from("share_links").select("id, range_from, range_to, sections, questions, expires_at, revoked_at, view_count, first_viewed_at, last_viewed_at, created_at").order("created_at"),
       sb.from("share_link_views").select("link_id, viewed_at").order("viewed_at"),
+      sb.from("sick_day_sessions").select("*").order("started_at"),
+      sb.from("caregiver_grants").select("id, label, status, can_adherence, can_missed_alerts, can_appointments, invite_expires_at, accepted_at, created_at, updated_at").eq("user_id", context.userId),
+      sb.from("caregiver_access_log").select("grant_id, categories, viewed_at").order("viewed_at"),
+      sb.rpc("my_caregiving"),
     ]);
-    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error ?? ap.error ?? vt.error ?? hy.error ?? sl.error ?? ct.error ?? pr.error ?? dsum.error ?? slinks.error ?? sviews.error;
+    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error ?? ap.error ?? vt.error ?? hy.error ?? sl.error ?? ct.error ?? pr.error ?? dsum.error ?? slinks.error ?? sviews.error ?? sick.error ?? cg.error ?? cglog.error ?? mine.error;
     if (err) fail("Could not prepare your data.", err);
     // Short-lived links so you can download your own uploaded prescriptions.
     const uploads: { version_no: number; file_name: string | null; link_valid_1h: string | null }[] = [];
@@ -205,6 +209,10 @@ export const exportMyData = createServerFn({ method: "POST" })
         doctor_summaries: dsum.data,
         doctor_share_links: slinks.data,
         doctor_share_link_views: sviews.data,
+        sick_day_sessions: sick.data,
+        caregivers: cg.data,
+        caregiver_views: cglog.data,
+        people_i_look_after: mine.data,
       },
       null,
       2,
@@ -225,7 +233,15 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       const { error: sErr } = await supabaseAdmin.storage.from("prescriptions").remove(files.map((f) => `${uid}/${f.name}`));
       if (sErr) fail("Could not delete your uploads. Please try again.", sErr);
     }
-    for (const t of ["share_link_views", "share_links", "doctor_summaries", "emergency_card_tokens", "appointments", "vitals", "hydration_logs", "sleep_logs", "symptom_entries", "unwell_sessions", "emergency_directory", "meals", "ai_usage", "doctor_plan_limits", "doctor_plan_diet", "doctor_plan_medicines", "doctor_plan_versions", "reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
+    // Links where this user is someone else's caregiver: the link goes, the other person's data stays.
+    const { data: asCg } = await supabaseAdmin.from("caregiver_grants").select("id").eq("caregiver_id", uid);
+    if (asCg?.length) {
+      const ids = asCg.map((g) => g.id);
+      await supabaseAdmin.from("caregiver_access_log").delete().in("grant_id", ids);
+      const { error: cgErr } = await supabaseAdmin.from("caregiver_grants").delete().in("id", ids);
+      if (cgErr) fail("Could not delete everything. Please try again.", cgErr);
+    }
+    for (const t of ["caregiver_access_log", "caregiver_grants", "sick_day_sessions", "share_link_views", "share_links", "doctor_summaries", "emergency_card_tokens", "appointments", "vitals", "hydration_logs", "sleep_logs", "symptom_entries", "unwell_sessions", "emergency_directory", "meals", "ai_usage", "doctor_plan_limits", "doctor_plan_diet", "doctor_plan_medicines", "doctor_plan_versions", "reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
       const { error } = await supabaseAdmin.from(t).delete().eq("user_id", uid);
       if (error) fail("Could not delete everything. Please try again.", error);
     }

@@ -37,6 +37,7 @@ import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
 import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as CaregiverInviteTokenRouteImport } from './routes/caregiver-invite.$token'
 import { Route as STokenRouteImport } from './routes/s.$token'
+import { Route as SettingsCaregiversRouteImport } from './routes/settings.caregivers'
 import { Route as SettingsEmergencyNumbersRouteImport } from './routes/settings.emergency-numbers'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
 import { Route as ApiPublicPushActionRouteImport } from './routes/api/public/push-action'
@@ -182,6 +183,11 @@ const STokenRoute = STokenRouteImport.update({
   path: '/s/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsCaregiversRoute = SettingsCaregiversRouteImport.update({
+  id: '/settings/caregivers',
+  path: '/settings/caregivers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsEmergencyNumbersRoute =
   SettingsEmergencyNumbersRouteImport.update({
     id: '/settings/emergency-numbers',
@@ -233,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/c/$token': typeof CTokenRoute
   '/caregiver-invite/$token': typeof CaregiverInviteTokenRoute
   '/s/$token': typeof STokenRoute
+  '/settings/caregivers': typeof SettingsCaregiversRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/c/$token': typeof CTokenRoute
   '/caregiver-invite/$token': typeof CaregiverInviteTokenRoute
   '/s/$token': typeof STokenRoute
+  '/settings/caregivers': typeof SettingsCaregiversRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/c/$token': typeof CTokenRoute
   '/caregiver-invite/$token': typeof CaregiverInviteTokenRoute
   '/s/$token': typeof STokenRoute
+  '/settings/caregivers': typeof SettingsCaregiversRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/c/$token'
     | '/caregiver-invite/$token'
     | '/s/$token'
+    | '/settings/caregivers'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/c/$token'
     | '/caregiver-invite/$token'
     | '/s/$token'
+    | '/settings/caregivers'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -406,6 +417,7 @@ export interface FileRouteTypes {
     | '/c/$token'
     | '/caregiver-invite/$token'
     | '/s/$token'
+    | '/settings/caregivers'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -441,6 +453,7 @@ export interface RootRouteChildren {
   CTokenRoute: typeof CTokenRoute
   CaregiverInviteTokenRoute: typeof CaregiverInviteTokenRoute
   STokenRoute: typeof STokenRoute
+  SettingsCaregiversRoute: typeof SettingsCaregiversRoute
   SettingsEmergencyNumbersRoute: typeof SettingsEmergencyNumbersRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
   ApiPublicPushActionRoute: typeof ApiPublicPushActionRoute
@@ -645,6 +658,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof STokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/caregivers': {
+      id: '/settings/caregivers'
+      path: '/settings/caregivers'
+      fullPath: '/settings/caregivers'
+      preLoaderRoute: typeof SettingsCaregiversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/emergency-numbers': {
       id: '/settings/emergency-numbers'
       path: '/settings/emergency-numbers'
@@ -705,6 +725,7 @@ const rootRouteChildren: RootRouteChildren = {
   CTokenRoute: CTokenRoute,
   CaregiverInviteTokenRoute: CaregiverInviteTokenRoute,
   STokenRoute: STokenRoute,
+  SettingsCaregiversRoute: SettingsCaregiversRoute,
   SettingsEmergencyNumbersRoute: SettingsEmergencyNumbersRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
   ApiPublicPushActionRoute: ApiPublicPushActionRoute,
