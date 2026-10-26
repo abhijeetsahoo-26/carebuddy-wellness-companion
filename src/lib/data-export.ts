@@ -35,6 +35,10 @@ const DESCRIPTIONS: Record<string, string> = {
   doctor_summaries: "When you prepared a doctor summary, the dates and sections chosen.",
   doctor_share_links: "Doctor share links: dates, sections, expiry, when opened and how many times.",
   doctor_share_link_views: "Each time a doctor share link was opened.",
+  sick_day_sessions: "Each sick-day mode session and its check-in answers.",
+  caregivers: "People you invited as caregivers and what they can see.",
+  caregiver_views: "Each time a caregiver looked at your shared updates.",
+  people_i_look_after: "People who shared their updates with you as a caregiver (first names only).",
 };
 
 function cell(v: unknown): string {

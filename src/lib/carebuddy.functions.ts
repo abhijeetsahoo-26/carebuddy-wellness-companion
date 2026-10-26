@@ -109,7 +109,15 @@ export const loadDemoData = createServerFn({ method: "POST" })
     const r3 = await sb.from("sleep_logs").upsert([7.5, 5.5, 6.5, 8, 5, 7, 6.5].map((h, i) => ({ user_id: uid, is_demo: true, night: istDate(new Date(Date.now() - (7 - i) * 86400e3)), hours: h })), { onConflict: "user_id,night", ignoreDuplicates: true });
     const r4 = await sb.from("water_logs").insert([6, 4, 7, 5, 8, 3, 6].flatMap((n, i) => Array.from({ length: n }, (_, j) => ({ user_id: uid, is_demo: true, logged_at: dayAt(7 - i, (8 + j * 2) * 60) }))));
     const r5 = await sb.from("hydration_logs").upsert({ user_id: uid, is_demo: true, day: istDate(new Date(Date.now() - 7 * 86400e3)), goal_glasses: 8 }, { onConflict: "user_id,day", ignoreDuplicates: true });
-    const tErr = r1.error ?? r2.error ?? r3.error ?? r4.error ?? r5.error;
+    const r6 = await sb.from("sick_day_sessions").insert({
+      user_id: uid, is_demo: true, started_at: dayAt(3, 9 * 60), ended_at: dayAt(3, 20 * 60),
+      checkins: [{ at: dayAt(3, 15 * 60), answer: "same", red_flags: [], outcome: "contact_if_3_days" }, { at: dayAt(3, 20 * 60), answer: "better", red_flags: [], outcome: "offer_end" }],
+    });
+    const r7 = await sb.from("caregiver_grants").insert({
+      user_id: uid, is_demo: true, label: "Sample caregiver (sample)", status: "invited", can_adherence: true, can_missed_alerts: true,
+      invite_hash: `sample-${crypto.randomUUID()}`, invite_expires_at: dayAt(1, 0), // already expired: can never be used
+    });
+    const tErr = r1.error ?? r2.error ?? r3.error ?? r4.error ?? r5.error ?? r6.error ?? r7.error;
     if (tErr) fail("Could not add sample tracking data.", tErr);
     return { ok: true };
   });
@@ -123,7 +131,7 @@ export const clearDemoData = createServerFn({ method: "POST" })
     const d = await context.supabase.from("meals").delete().eq("is_demo", true);
     const e = await context.supabase.from("symptom_entries").delete().eq("is_demo", true);
     if (e.error) fail("Could not remove sample data.", e.error);
-    for (const t of ["appointments", "vitals", "sleep_logs", "water_logs", "hydration_logs"] as const) {
+    for (const t of ["appointments", "vitals", "sleep_logs", "water_logs", "hydration_logs", "sick_day_sessions", "caregiver_grants"] as const) {
       const r = await context.supabase.from(t).delete().eq("is_demo", true);
       if (r.error) fail("Could not remove sample data.", r.error);
     }
