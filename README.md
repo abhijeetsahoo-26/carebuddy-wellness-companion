@@ -60,3 +60,11 @@ A personal medication, meal and symptom companion. **Not** a doctor, pharmacist,
 - Tables: `appointments`, `vitals`, `hydration_logs` (daily water goal), `sleep_logs`, `emergency_card_tokens`; new medicine columns `tablets_remaining`, `tablets_per_dose`, `missed_dose_instruction`.
 - Screens: `/appointments`, `/vitals`, `/water-sleep`, `/insights`, `/card`, public `/c/<token>`.
 - Tests: `src/test/tracking.test.tsx` (refill count, streak, insights, diary questions).
+
+## Doctor summary, sharing and export
+- `/summary` (More → Summary for my doctor, and the "See a doctor soon" result): pick a date range (default 30 days), sections and editable questions (prefilled from the next appointment). Preview, Make PDF, or Create link.
+- `src/lib/summary.ts` is a pure builder (`buildSummary`) used by the preview, the PDF (`summary-pdf.ts`, jsPDF, browser-only) and the shared page, so all three match. Lists and counts only — no interpretation, scoring or advice. Every value carries a source label ("entered by you" / "calculated"); ISO dates, India time, temperatures shown in °F.
+- Tables: `doctor_summaries` (each PDF/link generated), `share_links` (token hash only, range, sections, questions, expiry 1/7/30 days, revoked_at, view_count, first/last opened), `share_link_views` (each open).
+- Public page `/s/$token` calls `public.open_share_link(token)`, which checks hash, expiry and revocation and records the view; then the server reads only that owner's rows for that range. Bad/expired/revoked → "This link is not available."
+- Download my data is a ZIP: `carebuddy-data.json`, one CSV per kind of data, `README.txt`. Delete my account also removes share links, their view logs and summaries.
+- Tests: `src/test/summary.test.tsx`.

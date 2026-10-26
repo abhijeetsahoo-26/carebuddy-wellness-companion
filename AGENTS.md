@@ -31,3 +31,5 @@
 - Refill/appointment pushes run in the reminder job, are claimed via `reminder_log.dedupe_key`, and use fixed titles from `PUSH_TITLES` / `push-sw.js`. Why: no duplicates, no health data on lock screen.
 - Streak, weekly insights and diary-question prefill are pure functions in `src/lib/tracking.ts`; insight wording states counts only, never causes or advice. Why: deterministic, tested, non-diagnostic.
 - Tracking server functions live in `src/lib/tracking.functions.ts`. Public emergency card reads go only through `public.get_emergency_card(token)` (hashed, revocable tokens, switched-on items only). Why: no-login access without exposing other data.
+- Doctor summary content comes only from the pure `buildSummary()` in `src/lib/summary.ts` (preview, PDF and shared page all use it); it lists and counts, never interprets. Why: one consistent, non-diagnostic output.
+- Doctor share links are read only via `public.open_share_link(token)` (hashed, expiring, revocable, logs each view) before any owner data is loaded. Why: no-login access without exposing anything else.
