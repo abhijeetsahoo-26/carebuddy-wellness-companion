@@ -35,7 +35,7 @@ export const updateCaregiverGrant = createServerFn({ method: "POST" })
     const sb = context.supabase;
     const { data: g } = await sb.from("caregiver_grants").select("status").eq("id", data.id).eq("user_id", context.userId).maybeSingle();
     if (!g) fail("That caregiver was not found.");
-    let patch: Record<string, unknown>;
+    let patch: { status?: string; can_adherence?: boolean; can_missed_alerts?: boolean; can_appointments?: boolean };
     switch (data.action) {
       case "pause": if (g.status !== "active") fail("Only active access can be paused."); patch = { status: "paused" }; break;
       case "resume": if (g.status !== "paused") fail("Only paused access can be resumed."); patch = { status: "active" }; break;
