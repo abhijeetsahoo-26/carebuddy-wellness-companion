@@ -23,7 +23,7 @@ const FAQ = [
   { q: "Who can see my data?", a: "Only you, unless you choose to share it." },
   { q: "Can I delete my data?", a: "Yes, anytime. You can also download a copy first." },
   { q: "Does it work on my phone?", a: "Yes. It works in your phone's browser, and you can add it to your Home Screen." },
-  { q: "Is it free?", a: "Yes, it is free to use right now." },
+  { q: "Is it free?", a: "CareBuddy is a personal project in testing. Pricing, if any, will be shared before it changes." },
 ];
 
 export function Landing() {
