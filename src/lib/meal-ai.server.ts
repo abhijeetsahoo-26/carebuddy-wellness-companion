@@ -10,7 +10,7 @@ const INSTRUCTIONS =
 
 // Sends ONLY the meal text. Returns raw text or null on any failure.
 export async function askMealNote(mealText: string): Promise<string | null> {
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env['LOVABLE_API_KEY'];
   if (!apiKey) { console.error("LOVABLE_API_KEY missing"); return null; }
   try {
     const provider = createOpenAI({

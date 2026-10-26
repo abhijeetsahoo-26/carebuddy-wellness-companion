@@ -52,7 +52,7 @@ async function loadPlan(versionId?: string): Promise<FullPlan | null> {
   ]);
   const err = m.error ?? d.error ?? l.error;
   if (err) throw err;
-  return { version, medicines: m.data, diet: d.data, limits: l.data };
+  return { version, medicines: m.data ?? [], diet: d.data, limits: l.data ?? [] };
 }
 
 function Plan() {
