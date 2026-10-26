@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage: {
+        Row: {
+          calls: number
+          day: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calls?: number
+          day: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calls?: number
+          day?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -74,6 +95,177 @@ export type Database = {
           updated_at?: string
           user_id?: string
           version?: string
+        }
+        Relationships: []
+      }
+      doctor_plan_diet: {
+        Row: {
+          created_at: string
+          diet_rules: string | null
+          foods_to_avoid: string | null
+          id: string
+          special_instructions: string | null
+          user_id: string
+          version_id: string
+        }
+        Insert: {
+          created_at?: string
+          diet_rules?: string | null
+          foods_to_avoid?: string | null
+          id?: string
+          special_instructions?: string | null
+          user_id: string
+          version_id: string
+        }
+        Update: {
+          created_at?: string
+          diet_rules?: string | null
+          foods_to_avoid?: string | null
+          id?: string
+          special_instructions?: string | null
+          user_id?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_plan_diet_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: true
+            referencedRelation: "doctor_plan_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_plan_limits: {
+        Row: {
+          created_at: string
+          id: string
+          max_value: number | null
+          metric: string
+          min_value: number | null
+          set_by: string | null
+          set_on: string | null
+          user_id: string
+          version_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_value?: number | null
+          metric: string
+          min_value?: number | null
+          set_by?: string | null
+          set_on?: string | null
+          user_id: string
+          version_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_value?: number | null
+          metric?: string
+          min_value?: number | null
+          set_by?: string | null
+          set_on?: string | null
+          user_id?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_plan_limits_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_plan_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_plan_medicines: {
+        Row: {
+          confirmed: boolean
+          confirmed_on: string | null
+          created_at: string
+          date_advised: string | null
+          doctor_name: string | null
+          dose: string | null
+          id: string
+          interval_text: string | null
+          max_per_day: string | null
+          name: string
+          position: number
+          user_id: string
+          version_id: string
+        }
+        Insert: {
+          confirmed?: boolean
+          confirmed_on?: string | null
+          created_at?: string
+          date_advised?: string | null
+          doctor_name?: string | null
+          dose?: string | null
+          id?: string
+          interval_text?: string | null
+          max_per_day?: string | null
+          name: string
+          position?: number
+          user_id: string
+          version_id: string
+        }
+        Update: {
+          confirmed?: boolean
+          confirmed_on?: string | null
+          created_at?: string
+          date_advised?: string | null
+          doctor_name?: string | null
+          dose?: string | null
+          id?: string
+          interval_text?: string | null
+          max_per_day?: string | null
+          name?: string
+          position?: number
+          user_id?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_plan_medicines_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_plan_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_plan_versions: {
+        Row: {
+          attachment_name: string | null
+          attachment_path: string | null
+          attachment_type: string | null
+          created_at: string
+          id: string
+          is_demo: boolean
+          user_id: string
+          version_no: number
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_path?: string | null
+          attachment_type?: string | null
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          user_id: string
+          version_no: number
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_path?: string | null
+          attachment_type?: string | null
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          user_id?: string
+          version_no?: number
         }
         Relationships: []
       }
@@ -152,6 +344,48 @@ export type Database = {
           name?: string
           phone?: string
           relationship?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meals: {
+        Row: {
+          ai_note: string | null
+          ai_note_status: string
+          created_at: string
+          deleted_at: string | null
+          description: string
+          eaten_at: string
+          id: string
+          is_demo: boolean
+          meal_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_note?: string | null
+          ai_note_status?: string
+          created_at?: string
+          deleted_at?: string | null
+          description: string
+          eaten_at?: string
+          id?: string
+          is_demo?: boolean
+          meal_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_note?: string | null
+          ai_note_status?: string
+          created_at?: string
+          deleted_at?: string | null
+          description?: string
+          eaten_at?: string
+          id?: string
+          is_demo?: boolean
+          meal_type?: string
           updated_at?: string
           user_id?: string
         }
@@ -416,12 +650,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_ai_call: { Args: { _cap: number }; Returns: boolean }
       generate_doses: {
         Args: { _days?: number; _user: string }
         Returns: number
       }
       generate_my_doses: { Args: never; Returns: number }
       has_consent: { Args: { _uid: string }; Returns: boolean }
+      save_doctor_plan: { Args: { p: Json }; Returns: string }
     }
     Enums: {
       [_ in never]: never
