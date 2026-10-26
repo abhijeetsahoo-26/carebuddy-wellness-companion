@@ -139,6 +139,8 @@ export const clearDemoData = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+import { withConvertedTemperature } from "./summary";
+
 export const exportMyData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -212,7 +214,7 @@ export const exportMyData = createServerFn({ method: "POST" })
         symptom_diary: se.data,
         emergency_directory_edits: ed.data,
         appointments: ap.data,
-        vitals: vt.data,
+        vitals: withConvertedTemperature(vt.data ?? []),
         water_goals: hy.data,
         sleep: sl.data,
         emergency_card: { shown_items: pr.data?.card_prefs ?? null, share_links: ct.data },

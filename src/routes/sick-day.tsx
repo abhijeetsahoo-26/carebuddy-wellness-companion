@@ -17,7 +17,7 @@ import { showError } from "@/lib/errors";
 import { formatTimeIST } from "@/lib/time";
 import { addWater } from "@/lib/medicines.functions";
 import { endSickDay, recordSickCheckin } from "@/lib/sickday.functions";
-import { CHECKIN_AFTER_H, NOT_A_DOCTOR, SAME_TEXT, SICK_RED_FLAGS, WATER_EVERY_H, nextCheckinAt, type CheckinAnswer, type CheckinOutcome, type RedFlagKey } from "@/lib/sickday";
+import { CHECKIN_AFTER_H, NOT_A_DOCTOR, SAME_TEXT, SICK_RED_FLAGS, WATER_EVERY_H, nextCheckinAt, pastCheckinLimit, type CheckinAnswer, type CheckinOutcome, type RedFlagKey } from "@/lib/sickday";
 
 export const Route = createFileRoute("/sick-day")({
   validateSearch: z.object({ answer: z.enum(["better", "same", "worse"]).optional() }),
@@ -111,9 +111,21 @@ function Active({ session, initialAnswer }: { session: { id: string; started_at:
     ? <Button asChild size="lg" className="w-full"><a href={telHref(docPhone)}><Phone /> Call my doctor{acc?.profile?.doctor_name ? ` (${acc.profile.doctor_name})` : ""}</a></Button>
     : <p className="text-muted-foreground">No doctor phone saved. You can add it under More.</p>;
 
+  const limitReached = pastCheckinLimit(session.started_at);
+
   return (
     <>
-      <PageTitle title="Sick-day mode" sub={`Started ${formatTimeIST(session.started_at)}. Next check-in around ${formatTimeIST(nextCheckinAt(session.started_at))}.`} />
+      <PageTitle title="Sick-day mode" sub={limitReached ? `Started ${formatTimeIST(session.started_at)}. Check-in reminders have stopped.` : `Started ${formatTimeIST(session.started_at)}. Next check-in around ${formatTimeIST(nextCheckinAt(session.started_at))}.`} />
+
+      {limitReached && (
+        <section className="mt-6 rounded-2xl border-2 border-primary bg-card p-5" role="status">
+          <p className="text-xl font-semibold">{SAME_TEXT}</p>
+          <div className="mt-4 grid gap-3">
+            {callDoctor}
+            <Button size="lg" variant="outline" disabled={busy} onClick={stop}>End sick-day mode</Button>
+          </div>
+        </section>
+      )}
 
       {outcome === "emergency" && (
         <section role="alert" className="mt-6 rounded-2xl border-2 border-emergency bg-emergency-soft p-5">
@@ -152,7 +164,7 @@ function Active({ session, initialAnswer }: { session: { id: string; started_at:
 
       <section className="mt-6 rounded-2xl border bg-card p-5">
         <h2 className="text-xl font-semibold">How are you feeling now?</h2>
-        <p className="text-muted-foreground">We will also ask you every {CHECKIN_AFTER_H} hours.</p>
+        {!limitReached && <p className="text-muted-foreground">We will also ask you every {CHECKIN_AFTER_H} hours.</p>}
         <div className="mt-3 grid grid-cols-3 gap-2">
           {(["better", "same", "worse"] as const).map((a) => (
             <Button key={a} size="lg" variant="outline" className="h-14 text-lg" onClick={() => submit(a, [])}>{a === "better" ? "Better" : a === "same" ? "Same" : "Worse"}</Button>

@@ -4,6 +4,13 @@ import { inQuietHours, istMinutesOfDay } from "./time";
 
 export const WATER_EVERY_H = 2;
 export const CHECKIN_AFTER_H = 6;
+/** Repeating check-ins stop after this many hours (3 days) of sick-day mode. */
+export const CHECKIN_LIMIT_H = 72;
+
+/** True once sick-day mode has been on for 3 days or more. */
+export function pastCheckinLimit(startedAt: string, now: Date = new Date()) {
+  return now.getTime() - new Date(startedAt).getTime() >= CHECKIN_LIMIT_H * 3600e3;
+}
 /** Waking hours (India time) when no quiet hours are set; quiet hours also always hold reminders back. */
 export const WAKING_START_MIN = 7 * 60;
 export const WAKING_END_MIN = 22 * 60;
@@ -56,7 +63,7 @@ export function dueSickPushes(s: { id: string; started_at: string }, now: Date, 
   const w = Math.floor(elapsedH / WATER_EVERY_H);
   if (w >= 1) out.push({ kind: "sick_water", key: `sick_water:${s.id}:${w}` });
   const c = Math.floor(elapsedH / CHECKIN_AFTER_H);
-  if (c >= 1) out.push({ kind: "sick_checkin", key: `sick_checkin:${s.id}:${c}` });
+  if (c >= 1 && elapsedH < CHECKIN_LIMIT_H) out.push({ kind: "sick_checkin", key: `sick_checkin:${s.id}:${c}` });
   return out;
 }
 
