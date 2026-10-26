@@ -53,6 +53,9 @@ function HomeBody() {
       <Button asChild variant="outline" size="lg" className="mt-6 w-full">
         <Link to="/unwell"><Frown /> I feel unwell</Link>
       </Button>
+      <Link to="/diary" className="mt-3 inline-flex min-h-11 items-center gap-2 text-lg font-semibold text-primary underline-offset-4 hover:underline">
+        <NotebookPen className="size-5" /> Symptom diary
+      </Link>
 
       <TodayDoses />
 

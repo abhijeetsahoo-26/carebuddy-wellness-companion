@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse } from "lucide-react";
+import { ChevronRight, NotebookPen, PhoneCall, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AppShell, PageTitle } from "@/components/AppShell";
@@ -25,7 +25,9 @@ export const Route = createFileRoute("/more")({
 const links = [
   { to: "/settings/reminders", label: "Reminders", icon: Bell },
   { to: "/reminder-health", label: "Reminder health", icon: HeartPulse },
+  { to: "/diary", label: "Symptom diary", icon: NotebookPen },
   { to: "/contacts", label: "Emergency contacts", icon: Users },
+  { to: "/settings/emergency-numbers", label: "Emergency numbers", icon: PhoneCall },
   { to: "/activity", label: "Activity", icon: History },
   { to: "/my-data", label: "Download or delete my data", icon: Download },
   { to: "/privacy", label: "Privacy policy", icon: Shield },
