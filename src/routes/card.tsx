@@ -51,7 +51,7 @@ function Card() {
       ]);
       const err = m.error ?? c.error ?? t.error;
       if (err) throw err;
-      return { meds: m.data, contacts: c.data, liveLinks: t.data };
+      return { meds: m.data ?? [], contacts: c.data ?? [], liveLinks: t.data ?? [] };
     },
   });
   if (account.isLoading || q.isLoading) return <LoadingState />;

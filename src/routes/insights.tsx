@@ -33,11 +33,12 @@ function Insights() {
       ]);
       const err = d.error ?? w.error ?? s.error ?? e.error;
       if (err) throw err;
+      const doses = d.data ?? [], water = w.data ?? [], sleep = s.data ?? [], sym = e.data ?? [];
       const waterDays: Record<string, number> = {};
-      for (const r of w.data) { const k = istDate(new Date(r.logged_at)); waterDays[k] = (waterDays[k] ?? 0) + 1; }
+      for (const r of water) { const k = istDate(new Date(r.logged_at)); waterDays[k] = (waterDays[k] ?? 0) + 1; }
       return {
-        insights: weeklyInsights({ doses: d.data, waterDays, sleep: s.data.map((x) => ({ night: x.night, hours: Number(x.hours) })), symptoms: e.data }),
-        streak: streak(d.data),
+        insights: weeklyInsights({ doses, waterDays, sleep: sleep.map((x) => ({ night: x.night, hours: Number(x.hours) })), symptoms: sym }),
+        streak: streak(doses),
       };
     },
   });

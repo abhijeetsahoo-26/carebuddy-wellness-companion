@@ -50,9 +50,9 @@ function WaterSleep() {
       const err = w.error ?? g.error ?? s.error;
       if (err) throw err;
       const counts: Record<string, number> = {};
-      for (const r of w.data) { const d = istDate(new Date(r.logged_at)); counts[d] = (counts[d] ?? 0) + 1; }
-      const goalOn = (d: string) => [...g.data].reverse().find((x) => x.day <= d)?.goal_glasses ?? null;
-      return { counts, goalOn, sleep: s.data };
+      for (const r of w.data ?? []) { const d = istDate(new Date(r.logged_at)); counts[d] = (counts[d] ?? 0) + 1; }
+      const goalOn = (d: string) => [...(g.data ?? [])].reverse().find((x) => x.day <= d)?.goal_glasses ?? null;
+      return { counts, goalOn, sleep: s.data ?? [] };
     },
   });
   const currentGoal = q.data?.goalOn(istDate()) ?? null;
