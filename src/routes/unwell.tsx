@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/hooks/useAccount";
 import { useDirectory } from "@/hooks/useDirectory";
 import { saveUnwellCheck } from "@/lib/diary.functions";
+import { startSickDay } from "@/lib/sickday.functions";
 import { decide, DURATIONS, GI_FREQUENCY, SYMPTOMS, type UnwellAnswers, type UnwellResult } from "@/lib/unwell";
 import { telHref } from "@/lib/directory";
 import { showError } from "@/lib/errors";
@@ -39,6 +40,7 @@ function Unwell() {
   const [step, setStep] = useState(0);
   const [d, setD] = useState<Draft>({ symptoms: [], other: "", tempText: "" });
   const [result, setResult] = useState<{ result: UnwellResult; reasons: string[]; answers: UnwellAnswers } | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const set = (p: Partial<Draft>) => setD((x) => ({ ...x, ...p }));
   const next = () => setStep((s) => s + 1);
   const yesNo = (k: keyof UnwellAnswers) => (v: boolean) => { set({ [k]: v } as Partial<Draft>); next(); };
@@ -54,11 +56,11 @@ function Unwell() {
     // Show the result straight away; saving to the diary must never delay help.
     setResult({ ...decide(answers), answers });
     window.scrollTo(0, 0);
-    try { await save({ data: answers }); toast.success("Saved to your symptom diary"); }
+    try { const saved = await save({ data: answers }); setSessionId(saved.sessionId); toast.success("Saved to your symptom diary"); }
     catch (e) { showError(e); }
   }
 
-  if (result) return <Result r={result.result} reasons={result.reasons} answers={result.answers} />;
+  if (result) return <Result r={result.result} reasons={result.reasons} answers={result.answers} sessionId={sessionId} />;
 
   const q = (title: string, body: React.ReactNode) => (
     <>
@@ -190,7 +192,7 @@ function Reminder() {
 
 const NOT_A_DOCTOR = "I'm not a doctor. Please follow your doctor's advice.";
 
-function Result({ r, reasons, answers }: { r: UnwellResult; reasons: string[]; answers: UnwellAnswers }) {
+function Result({ r, reasons, answers, sessionId }: { r: UnwellResult; reasons: string[]; answers: UnwellAnswers; sessionId: string | null }) {
   const { data } = useAccount();
   const docPhone = data?.profile?.doctor_phone;
   const docName = data?.profile?.doctor_name;
@@ -215,6 +217,7 @@ function Result({ r, reasons, answers }: { r: UnwellResult; reasons: string[]; a
         </section>
       )}
       {r === "self_care" && <SelfCare />}
+      {r === "self_care" && <StartSickDay sessionId={sessionId} />}
       <p className="mt-6 text-lg font-semibold">{NOT_A_DOCTOR}</p>
       <div className="mt-4 flex flex-wrap gap-3">
         <Button asChild variant="outline"><Link to="/diary"><BookOpen /> Open my symptom diary</Link></Button>
@@ -267,6 +270,23 @@ function EmergencyResult({ reasons, selfHarm, callDoctor }: { reasons: string[];
       </div>
       {selfHarm && <p className="mt-4 text-lg">You are not alone. Please talk to someone now — a helpline, a family member or a friend.</p>}
       <p className="mt-4">CareBuddy does not call anyone for you. Only you can place these calls.</p>
+    </section>
+  );
+}
+
+function StartSickDay({ sessionId }: { sessionId: string | null }) {
+  const start = useServerFn(startSickDay);
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  return (
+    <section className="mt-4 rounded-2xl border bg-card p-5">
+      <h2 className="text-xl font-semibold">Sick-day mode</h2>
+      <p className="mt-1 text-lg">Reminders for water, light meals and rest, and a check-in after 6 hours. You can stop it at any time.</p>
+      <Button size="lg" className="mt-3 w-full" disabled={busy} onClick={async () => {
+        setBusy(true);
+        try { await start({ data: { unwell_session_id: sessionId } }); navigate({ to: "/sick-day" }); }
+        catch (e) { showError(e); setBusy(false); }
+      }}><Leaf /> Start sick-day mode</Button>
     </section>
   );
 }

@@ -33,3 +33,5 @@
 - Tracking server functions live in `src/lib/tracking.functions.ts`. Public emergency card reads go only through `public.get_emergency_card(token)` (hashed, revocable tokens, switched-on items only). Why: no-login access without exposing other data.
 - Doctor summary content comes only from the pure `buildSummary()` in `src/lib/summary.ts` (preview, PDF and shared page all use it); it lists and counts, never interprets. Why: one consistent, non-diagnostic output.
 - Doctor share links are read only via `public.open_share_link(token)` (hashed, expiring, revocable, logs each view) before any owner data is loaded. Why: no-login access without exposing anything else.
+- Sick-day, caregiver-permission and meal-idea reply rules are pure functions (`src/lib/sickday.ts`, `src/lib/caregiver.ts`, `checkMealIdeas()` in `meal-note.ts`); servers re-decide from them. Why: deterministic, tested safety logic.
+- Caregivers never read owner tables directly; only `public.get_caregiver_dashboard(grant)` returns data (active grant, chosen categories, logged). Why: nothing else can leak and every view is recorded.

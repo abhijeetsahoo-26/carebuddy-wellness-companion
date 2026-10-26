@@ -24,7 +24,7 @@ export const saveUnwellCheck = createServerFn({ method: "POST" })
       user_id: context.userId, session_id: s.id, symptoms, severity: data.pain, result, source: "check",
     });
     if (e2) fail("Could not save this check to your diary.", e2);
-    return { result, reasons };
+    return { result, reasons, sessionId: s.id as string };
   });
 
 export const addDiaryEntry = createServerFn({ method: "POST" })

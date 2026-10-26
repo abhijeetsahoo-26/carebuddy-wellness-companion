@@ -31,8 +31,9 @@ const ENTITY: Record<string, string> = {
   water_goal: "Water goal",
   sleep: "Sleep entry",
   card_link: "Emergency card link",
+  caregiver: "Caregiver",
 };
-const ACTION: Record<string, string> = { create: "added", edit: "changed", delete: "removed", archive: "archived", restore: "restored" };
+const ACTION: Record<string, string> = { create: "added", edit: "changed", delete: "removed", archive: "archived", restore: "restored", invite: "invited", grant: "access granted", pause: "access paused", resume: "access resumed", revoke: "access removed", cancel: "invite cancelled" };
 
 function Activity() {
   const { user } = useAuth();
@@ -54,7 +55,7 @@ function Activity() {
           <ol className="space-y-2">
             {q.data.map((a) => (
               <li key={a.id} className="rounded-2xl border bg-card p-4">
-                <p className="text-lg font-semibold">{ENTITY[a.entity] ?? a.entity} {ACTION[a.action] ?? a.action}{a.entity === "medicine" && a.summary ? `: ${a.summary}` : ""}</p>
+                <p className="text-lg font-semibold">{ENTITY[a.entity] ?? a.entity} {ACTION[a.action] ?? a.action}{(a.entity === "medicine" || a.entity === "caregiver") && a.summary ? `: ${a.summary}` : ""}</p>
                 <p className="text-muted-foreground">
                   By {a.actor_id === user?.id ? "you" : a.actor_id ? "someone you shared with" : "the system"} ·{" "}
                   {new Date(a.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}

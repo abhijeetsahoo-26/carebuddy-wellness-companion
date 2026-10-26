@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Lightbulb, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { EmptyState, ErrorState, LoadingState } from "@/components/States";
 import { supabase } from "@/integrations/supabase/client";
-import { saveMeal, deleteMeal, restoreMeal } from "@/lib/plan.functions";
+import { saveMeal, deleteMeal, restoreMeal, getMealIdeas } from "@/lib/plan.functions";
 import { MEAL_TYPES, mealSchema, firstIssue } from "@/lib/validation";
-import { MEAL_NOTE_UNAVAILABLE } from "@/lib/meal-note";
+import { MEAL_NOTE_UNAVAILABLE, DIET_FIRST, IDEAS_UNAVAILABLE } from "@/lib/meal-note";
 import { showError } from "@/lib/errors";
 import { formatTimeIST, istDate, TZ } from "@/lib/time";
 import type { Database } from "@/integrations/supabase/types";
@@ -79,6 +79,7 @@ function Meals() {
     <>
       <PageTitle title="Meals" sub="Note what you ate. A short note about nutrients may appear." />
       <Button size="lg" className="mt-6 w-full" onClick={() => setEditing("new")}><Plus /> Add a meal</Button>
+      <MealIdeas />
       <div className="mt-6 space-y-6">
         {q.isLoading ? <LoadingState /> : q.error ? <ErrorState error={q.error} onRetry={() => q.refetch()} /> :
           !groups.size ? <EmptyState title="No meals noted yet">Add what you ate today.</EmptyState> :
@@ -114,6 +115,33 @@ function Meals() {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+type IdeasResult = Awaited<ReturnType<typeof getMealIdeas>>;
+function MealIdeas() {
+  const ask = useServerFn(getMealIdeas);
+  const [busy, setBusy] = useState(false);
+  const [res, setRes] = useState<IdeasResult | null>(null);
+  async function go() {
+    setBusy(true);
+    try { setRes(await ask()); } catch { setRes({ kind: "unavailable" }); } finally { setBusy(false); }
+  }
+  return (
+    <section className="mt-4 rounded-2xl border bg-card p-4" aria-live="polite">
+      <Button size="lg" variant="outline" className="w-full" disabled={busy} onClick={go}><Lightbulb /> {busy ? "Thinking…" : "Meal ideas"}</Button>
+      {res && (
+        <div className="mt-3">
+          <p className="font-semibold">{DIET_FIRST}</p>
+          {res.kind === "ideas" && <><ul className="mt-2 list-disc space-y-1 pl-6 text-lg">{res.ideas.map((i) => <li key={i}>{i}</li>)}</ul>
+            <p className="mt-2 text-sm text-muted-foreground">Ideas are written by AI from your doctor's diet rules and allergy list only. Check them against your plan.</p></>}
+          {res.kind === "general" && <><p className="mt-2">No diet rules from your doctor are saved yet, so here are general healthy-eating tips:</p>
+            <ul className="mt-2 list-disc space-y-1 pl-6 text-lg">{res.tips.map((t) => <li key={t}>{t}</li>)}</ul>
+            <Button asChild variant="link" className="mt-1 h-11 px-0 text-base"><Link to="/plan">Add your doctor's plan</Link></Button></>}
+          {res.kind === "unavailable" && <p className="mt-2 text-lg">{IDEAS_UNAVAILABLE}</p>}
+        </div>
+      )}
+    </section>
   );
 }
 

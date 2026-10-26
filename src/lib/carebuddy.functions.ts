@@ -109,7 +109,15 @@ export const loadDemoData = createServerFn({ method: "POST" })
     const r3 = await sb.from("sleep_logs").upsert([7.5, 5.5, 6.5, 8, 5, 7, 6.5].map((h, i) => ({ user_id: uid, is_demo: true, night: istDate(new Date(Date.now() - (7 - i) * 86400e3)), hours: h })), { onConflict: "user_id,night", ignoreDuplicates: true });
     const r4 = await sb.from("water_logs").insert([6, 4, 7, 5, 8, 3, 6].flatMap((n, i) => Array.from({ length: n }, (_, j) => ({ user_id: uid, is_demo: true, logged_at: dayAt(7 - i, (8 + j * 2) * 60) }))));
     const r5 = await sb.from("hydration_logs").upsert({ user_id: uid, is_demo: true, day: istDate(new Date(Date.now() - 7 * 86400e3)), goal_glasses: 8 }, { onConflict: "user_id,day", ignoreDuplicates: true });
-    const tErr = r1.error ?? r2.error ?? r3.error ?? r4.error ?? r5.error;
+    const r6 = await sb.from("sick_day_sessions").insert({
+      user_id: uid, is_demo: true, started_at: dayAt(3, 9 * 60), ended_at: dayAt(3, 20 * 60),
+      checkins: [{ at: dayAt(3, 15 * 60), answer: "same", red_flags: [], outcome: "contact_if_3_days" }, { at: dayAt(3, 20 * 60), answer: "better", red_flags: [], outcome: "offer_end" }],
+    });
+    const r7 = await sb.from("caregiver_grants").insert({
+      user_id: uid, is_demo: true, label: "Sample caregiver (sample)", status: "invited", can_adherence: true, can_missed_alerts: true,
+      invite_hash: `sample-${crypto.randomUUID()}`, invite_expires_at: dayAt(1, 0), // already expired: can never be used
+    });
+    const tErr = r1.error ?? r2.error ?? r3.error ?? r4.error ?? r5.error ?? r6.error ?? r7.error;
     if (tErr) fail("Could not add sample tracking data.", tErr);
     return { ok: true };
   });
@@ -123,7 +131,7 @@ export const clearDemoData = createServerFn({ method: "POST" })
     const d = await context.supabase.from("meals").delete().eq("is_demo", true);
     const e = await context.supabase.from("symptom_entries").delete().eq("is_demo", true);
     if (e.error) fail("Could not remove sample data.", e.error);
-    for (const t of ["appointments", "vitals", "sleep_logs", "water_logs", "hydration_logs"] as const) {
+    for (const t of ["appointments", "vitals", "sleep_logs", "water_logs", "hydration_logs", "sick_day_sessions", "caregiver_grants"] as const) {
       const r = await context.supabase.from(t).delete().eq("is_demo", true);
       if (r.error) fail("Could not remove sample data.", r.error);
     }
@@ -135,7 +143,7 @@ export const exportMyData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const sb = context.supabase;
-    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed, ap, vt, hy, sl, ct, pr, dsum, slinks, sviews] = await Promise.all([
+    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed, ap, vt, hy, sl, ct, pr, dsum, slinks, sviews, sick, cg, cglog, mine] = await Promise.all([
       sb.from("profiles").select("*").maybeSingle(),
       sb.from("consents").select("*"),
       sb.from("emergency_contacts").select("*"),
@@ -163,8 +171,12 @@ export const exportMyData = createServerFn({ method: "POST" })
       sb.from("doctor_summaries").select("*").order("created_at"),
       sb.from("share_links").select("id, range_from, range_to, sections, questions, expires_at, revoked_at, view_count, first_viewed_at, last_viewed_at, created_at").order("created_at"),
       sb.from("share_link_views").select("link_id, viewed_at").order("viewed_at"),
+      sb.from("sick_day_sessions").select("*").order("started_at"),
+      sb.from("caregiver_grants").select("id, label, status, can_adherence, can_missed_alerts, can_appointments, invite_expires_at, accepted_at, created_at, updated_at").eq("user_id", context.userId),
+      sb.from("caregiver_access_log").select("grant_id, categories, viewed_at").order("viewed_at"),
+      sb.rpc("my_caregiving"),
     ]);
-    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error ?? ap.error ?? vt.error ?? hy.error ?? sl.error ?? ct.error ?? pr.error ?? dsum.error ?? slinks.error ?? sviews.error;
+    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error ?? ap.error ?? vt.error ?? hy.error ?? sl.error ?? ct.error ?? pr.error ?? dsum.error ?? slinks.error ?? sviews.error ?? sick.error ?? cg.error ?? cglog.error ?? mine.error;
     if (err) fail("Could not prepare your data.", err);
     // Short-lived links so you can download your own uploaded prescriptions.
     const uploads: { version_no: number; file_name: string | null; link_valid_1h: string | null }[] = [];
@@ -205,6 +217,10 @@ export const exportMyData = createServerFn({ method: "POST" })
         doctor_summaries: dsum.data,
         doctor_share_links: slinks.data,
         doctor_share_link_views: sviews.data,
+        sick_day_sessions: sick.data,
+        caregivers: cg.data,
+        caregiver_views: cglog.data,
+        people_i_look_after: mine.data,
       },
       null,
       2,
@@ -225,7 +241,15 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       const { error: sErr } = await supabaseAdmin.storage.from("prescriptions").remove(files.map((f) => `${uid}/${f.name}`));
       if (sErr) fail("Could not delete your uploads. Please try again.", sErr);
     }
-    for (const t of ["share_link_views", "share_links", "doctor_summaries", "emergency_card_tokens", "appointments", "vitals", "hydration_logs", "sleep_logs", "symptom_entries", "unwell_sessions", "emergency_directory", "meals", "ai_usage", "doctor_plan_limits", "doctor_plan_diet", "doctor_plan_medicines", "doctor_plan_versions", "reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
+    // Links where this user is someone else's caregiver: the link goes, the other person's data stays.
+    const { data: asCg } = await supabaseAdmin.from("caregiver_grants").select("id").eq("caregiver_id", uid);
+    if (asCg?.length) {
+      const ids = asCg.map((g) => g.id);
+      await supabaseAdmin.from("caregiver_access_log").delete().in("grant_id", ids);
+      const { error: cgErr } = await supabaseAdmin.from("caregiver_grants").delete().in("id", ids);
+      if (cgErr) fail("Could not delete everything. Please try again.", cgErr);
+    }
+    for (const t of ["caregiver_access_log", "caregiver_grants", "sick_day_sessions", "share_link_views", "share_links", "doctor_summaries", "emergency_card_tokens", "appointments", "vitals", "hydration_logs", "sleep_logs", "symptom_entries", "unwell_sessions", "emergency_directory", "meals", "ai_usage", "doctor_plan_limits", "doctor_plan_diet", "doctor_plan_medicines", "doctor_plan_versions", "reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
       const { error } = await supabaseAdmin.from(t).delete().eq("user_id", uid);
       if (error) fail("Could not delete everything. Please try again.", error);
     }

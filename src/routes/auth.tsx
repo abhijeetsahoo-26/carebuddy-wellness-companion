@@ -36,7 +36,11 @@ function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (session) navigate({ to: "/" });
+    if (!session) return;
+    // A caregiver invite opened before signing in continues here.
+    const pending = sessionStorage.getItem("cb_invite");
+    if (pending && /^[A-Za-z0-9_-]{32,128}$/.test(pending)) navigate({ to: "/caregiver-invite/$token", params: { token: pending } });
+    else navigate({ to: "/" });
   }, [session, navigate]);
 
   async function submit(e: FormEvent) {

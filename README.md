@@ -68,3 +68,9 @@ A personal medication, meal and symptom companion. **Not** a doctor, pharmacist,
 - Public page `/s/$token` calls `public.open_share_link(token)`, which checks hash, expiry and revocation and records the view; then the server reads only that owner's rows for that range. Bad/expired/revoked → "This link is not available."
 - Download my data is a ZIP: `carebuddy-data.json`, one CSV per kind of data, `README.txt`. Delete my account also removes share links, their view logs and summaries.
 - Tests: `src/test/summary.test.tsx`.
+
+## Sick-day mode, meal ideas, caregivers
+- Sick-day mode (`/sick-day`, `sick_day_sessions`): started only by the user from a self-care result. Rules in `src/lib/sickday.ts` (pure, tested): water push every 2 h while awake (07:00–22:00 India time and outside quiet hours), check-in push every 6 h with Better / Same / Worse; red flags always show EMERGENCY. Check-ins are stored on the session and in the symptom diary (`source = 'sick_day'`). Doctor's Plan symptom medicines are shown as text only.
+- Meal ideas (`getMealIdeas` in `plan.functions.ts`): sends only diet rules, foods to avoid and allergies; reply must pass `checkMealIdeas()`; cap 10/day via `claim_meal_idea_call()`. No diet rules → fixed general tips, no AI call.
+- Caregivers: `caregiver_grants` (single-use 3-day invite, hashed; categories adherence / not-marked alerts / appointments), `caregiver_access_log`. Caregivers read only through `get_caregiver_dashboard(grant)` (active grant for the caller, switched-on categories only, logs each view). Pause/revoke takes effect on the next read. Missed-dose alerts run in the reminder job (2 h after the dose time, dedupe key per grant+dose). Activity records invite/grant/edit/pause/resume/revoke/cancel.
+- Tests: `src/test/sickday-caregiver.test.tsx`.

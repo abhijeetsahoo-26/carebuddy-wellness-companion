@@ -46,6 +46,20 @@ describe("doctor summary", () => {
     expect(row.source).toContain("calculated");
   });
 
+  it("shows a °C reading as entered, with °F converted beside it", () => {
+    const raw = { ...empty, vitals: [{ kind: "temperature", measured_at: at("2026-10-10", "09:00"), value: 38, value2: null, unit: "°C" }] };
+    const row = buildSummary(raw, req(), NOW).numbers![0]!.rows[0]!;
+    expect(row.display).toBe("38 °C");
+    expect(row.converted).toBe("100.4 °F (converted)");
+  });
+
+  it("shows a °F reading as entered, with °C converted beside it", () => {
+    const raw = { ...empty, vitals: [{ kind: "temperature", measured_at: at("2026-10-10", "09:00"), value: 100.4, value2: null, unit: "°F" }] };
+    const row = buildSummary(raw, req(), NOW).numbers![0]!.rows[0]!;
+    expect(row.display).toBe("100.4 °F");
+    expect(row.converted).toBe("38 °C (converted)");
+  });
+
   it("most-logged symptoms count diary entries, ignoring deleted ones", () => {
     const d = (day: string, symptoms: string[], deleted = false) => ({ occurred_at: at(day, "10:00"), symptoms, severity: null, result: null, notes: null, source: "manual", deleted_at: deleted ? NOW.toISOString() : null });
     const raw = { ...empty, diary: [d("2026-10-02", ["Headache"]), d("2026-10-03", ["Headache", "Cough"]), d("2026-10-04", ["Cough"], true)] };
