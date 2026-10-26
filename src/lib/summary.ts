@@ -236,7 +236,7 @@ export function withConvertedTemperature<T extends { kind: string; value: number
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(r)) {
       out[k] = v;
-      if (k === "unit") out.converted = r.kind === "temperature" ? temperatureDisplay(r.kind, Number(r.value), r.value2 ?? null, r.unit, Number(r.value)).converted : null;
+      if (k === "unit") out["converted"] = r.kind === "temperature" ? temperatureDisplay(r.kind, Number(r.value), r.value2 ?? null, r.unit, Number(r.value)).converted : null;
     }
     return out;
   });
