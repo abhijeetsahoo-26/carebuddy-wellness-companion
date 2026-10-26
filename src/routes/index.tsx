@@ -1,9 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { Pill, Utensils, HeartPulse, ClipboardList, Siren, LogOut } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Pill, Utensils, HeartPulse, ClipboardList, LogOut, Frown } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { AppShell } from "@/components/AppShell";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,32 +25,40 @@ const tiles = [
 ];
 
 function Home() {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  return (
+    <AppShell>
+      <HomeBody />
+    </AppShell>
+  );
+}
 
-  useEffect(() => {
-    if (!loading && !user) navigate({ to: "/auth" });
-  }, [loading, user, navigate]);
-
-  if (loading || !user) {
-    return <main className="flex min-h-screen items-center justify-center text-muted-foreground" aria-busy="true">Loading…</main>;
-  }
-
+function HomeBody() {
+  const qc = useQueryClient();
   const hour = new Date().toLocaleString("en-IN", { hour: "numeric", hour12: false, timeZone: "Asia/Kolkata" });
   const h = Number(hour);
   const greet = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
 
+  async function signOut() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+  }
+
   return (
-    <main className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-8">
+    <>
       <header className="flex items-center justify-between">
         <span className="font-display text-2xl font-bold text-primary">CareBuddy</span>
-        <Button variant="ghost" size="sm" onClick={() => supabase.auth.signOut()} aria-label="Sign out">
+        <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sign out">
           <LogOut /> Sign out
         </Button>
       </header>
 
       <h1 className="mt-8 text-3xl font-bold">{greet}</h1>
       <p className="mt-1 text-lg text-muted-foreground">What would you like to do?</p>
+
+      <Button asChild variant="outline" size="lg" className="mt-6 w-full">
+        <Link to="/unwell"><Frown /> I feel unwell</Link>
+      </Button>
 
       <ul className="mt-6 grid gap-4">
         {tiles.map(({ icon: Icon, title, text }) => (
@@ -70,14 +78,6 @@ function Home() {
       <p className="mt-8 text-sm text-muted-foreground">
         CareBuddy is a reminder and tracking helper. It is not a doctor and does not give medical advice.
       </p>
-
-      <div className="fixed inset-x-0 bottom-0 border-t bg-background/95 p-4 backdrop-blur">
-        <div className="mx-auto max-w-xl">
-          <Button asChild variant="emergency" size="lg" className="w-full">
-            <Link to="/emergency"><Siren /> Emergency help</Link>
-          </Button>
-        </div>
-      </div>
-    </main>
+    </>
   );
 }
