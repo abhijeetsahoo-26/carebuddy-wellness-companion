@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { saveProfileSchema, emergencyContactSchema, idSchema } from "./validation";
-import { CONSENT_VERSION, DEMO_EMERGENCY_CONTACTS } from "./demo";
+import { CONSENT_VERSION, DEMO_EMERGENCY_CONTACTS, DEMO_MEDICINES } from "./demo";
+import { istDate, istDayStartUTC } from "./time";
 
 function fail(msg: string, e?: unknown): never {
   if (e) console.error(msg, e);
@@ -59,18 +60,44 @@ export const deleteEmergencyContact = createServerFn({ method: "POST" })
 export const loadDemoData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { error } = await context.supabase
+    const sb = context.supabase;
+    const uid = context.userId;
+    const { error } = await sb
       .from("emergency_contacts")
-      .insert(DEMO_EMERGENCY_CONTACTS.map((c) => ({ ...c, user_id: context.userId, is_demo: true })));
+      .insert(DEMO_EMERGENCY_CONTACTS.map((c) => ({ ...c, user_id: uid, is_demo: true })));
     if (error) fail("Could not add sample data.", error);
+    const today = istDate();
+    const start = istDate(new Date(Date.now() - 6 * 86400e3));
+    const { data: meds, error: mErr } = await sb
+      .from("medicines")
+      .insert(DEMO_MEDICINES.map((m) => ({ ...m, user_id: uid, is_demo: true, start_date: start })))
+      .select("id, times");
+    if (mErr) fail("Could not add sample data.", mErr);
+    await sb.rpc("generate_my_doses");
+    // Past week of sample doses so the weekly chart has something to show.
+    const past: { user_id: string; medicine_id: string; scheduled_at: string; status: string; logged_at: string; is_demo: boolean }[] = [];
+    let i = 0;
+    for (let day = 6; day >= 1; day--) {
+      const date = istDate(new Date(istDayStartUTC(today).getTime() - day * 86400e3 + 12 * 3600e3));
+      for (const m of meds) for (const t of m.times) {
+        const [h, mi] = t.split(":").map(Number);
+        const at = new Date(istDayStartUTC(date).getTime() + ((h ?? 0) * 60 + (mi ?? 0)) * 60e3);
+        const status = i++ % 5 === 3 ? "skipped" : "taken";
+        past.push({ user_id: uid, medicine_id: m.id, scheduled_at: at.toISOString(), status, logged_at: at.toISOString(), is_demo: true });
+      }
+    }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error: dErr } = await supabaseAdmin.from("dose_logs").upsert(past, { onConflict: "medicine_id,scheduled_at", ignoreDuplicates: true });
+    if (dErr) fail("Could not add sample doses.", dErr);
     return { ok: true };
   });
 
 export const clearDemoData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { error } = await context.supabase.from("emergency_contacts").delete().eq("is_demo", true);
-    if (error) fail("Could not remove sample data.", error);
+    const a = await context.supabase.from("emergency_contacts").delete().eq("is_demo", true);
+    const b = await context.supabase.from("medicines").delete().eq("is_demo", true);
+    if (a.error || b.error) fail("Could not remove sample data.", a.error ?? b.error);
     return { ok: true };
   });
 
@@ -78,13 +105,18 @@ export const exportMyData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const sb = context.supabase;
-    const [profile, consents, contacts, audit] = await Promise.all([
+    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog] = await Promise.all([
       sb.from("profiles").select("*").maybeSingle(),
       sb.from("consents").select("*"),
       sb.from("emergency_contacts").select("*"),
       sb.from("audit_log").select("*").order("created_at"),
+      sb.from("medicines").select("*"),
+      sb.from("dose_logs").select("*").order("scheduled_at"),
+      sb.from("water_logs").select("*"),
+      sb.from("reminder_settings").select("enabled, quiet_start, quiet_end, last_test_sent_at, last_test_received_at"),
+      sb.from("reminder_log").select("kind, status, scheduled_for, sent_at, created_at"),
     ]);
-    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error;
+    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error;
     if (err) fail("Could not prepare your data.", err);
     return JSON.stringify(
       {
@@ -94,6 +126,11 @@ export const exportMyData = createServerFn({ method: "POST" })
         consents: consents.data,
         emergency_contacts: contacts.data,
         activity: audit.data,
+        medicines: medicines.data,
+        doses: doses.data,
+        water: water.data,
+        reminder_settings: rsettings.data,
+        reminders_sent: rlog.data,
       },
       null,
       2,
@@ -109,7 +146,7 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const uid = context.userId;
-    for (const t of ["emergency_contacts", "audit_log", "consents", "profiles"] as const) {
+    for (const t of ["reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
       const { error } = await supabaseAdmin.from(t).delete().eq("user_id", uid);
       if (error) fail("Could not delete everything. Please try again.", error);
     }
