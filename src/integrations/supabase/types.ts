@@ -349,6 +349,39 @@ export type Database = {
         }
         Relationships: []
       }
+      emergency_directory: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          label: string
+          number: string
+          sort: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          label: string
+          number: string
+          sort?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          label?: string
+          number?: string
+          sort?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       meals: {
         Row: {
           ai_note: string | null
@@ -614,6 +647,92 @@ export type Database = {
           quiet_end?: string | null
           quiet_start?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      symptom_entries: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          is_demo: boolean
+          notes: string | null
+          occurred_at: string
+          result: string | null
+          session_id: string | null
+          severity: number | null
+          source: string
+          symptoms: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_demo?: boolean
+          notes?: string | null
+          occurred_at?: string
+          result?: string | null
+          session_id?: string | null
+          severity?: number | null
+          source?: string
+          symptoms?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_demo?: boolean
+          notes?: string | null
+          occurred_at?: string
+          result?: string | null
+          session_id?: string | null
+          severity?: number | null
+          source?: string
+          symptoms?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "symptom_entries_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "unwell_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      unwell_sessions: {
+        Row: {
+          answers: Json
+          created_at: string
+          id: string
+          is_demo: boolean
+          reasons: string[]
+          result: string
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          reasons?: string[]
+          result: string
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          reasons?: string[]
+          result?: string
           user_id?: string
         }
         Relationships: []

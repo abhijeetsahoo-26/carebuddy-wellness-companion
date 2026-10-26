@@ -22,6 +22,13 @@
       "when": 1793001969528,
       "tag": "0002_doctor_plan_and_meals",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793002578875,
+      "tag": "0003_unwell_diary_directory",
+      "breakpoints": true
     }
   ]
 }
