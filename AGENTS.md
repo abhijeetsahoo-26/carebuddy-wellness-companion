@@ -20,3 +20,7 @@
 - Every push is claimed by inserting `reminder_log.dedupe_key` before sending. Why: a reminder is never sent twice, even if the job overlaps.
 - Notification payloads never contain medicine names or health data; the shown title is fixed. Why: lock-screen privacy.
 - `public/push-sw.js` is push-only; do not add page caching to it. Why: avoid stale previews and app versions.
+- Doctor's Plan versions are immutable: save only via `public.save_doctor_plan(jsonb)` (one atomic new version); never UPDATE plan rows. Why: read-only history.
+- Plan and meal server functions live in `src/lib/plan.functions.ts`. Why: keep the core functions file small.
+- AI meal notes send only the meal text, are capped per user per day via `public.claim_ai_call()`, and must pass `checkMealNote()` server-side before being stored. Why: no medical claims reach the user.
+- Prescription files live in the private `prescriptions` bucket under `<user_id>/`; never extract or interpret them. Why: user reference only.

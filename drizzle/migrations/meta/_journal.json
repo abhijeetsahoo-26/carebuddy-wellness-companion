@@ -15,6 +15,13 @@
       "when": 1793000891911,
       "tag": "0001_medicines_doses_reminders",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793001969528,
+      "tag": "0002_doctor_plan_and_meals",
+      "breakpoints": true
     }
   ]
 }
