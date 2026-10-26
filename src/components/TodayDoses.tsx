@@ -34,7 +34,7 @@ export function TodayDoses() {
     return () => clearInterval(t);
   }, [refresh, qc]);
 
-  const reload = () => qc.invalidateQueries({ queryKey: ["doses"] });
+  const reload = () => Promise.all([qc.invalidateQueries({ queryKey: ["doses"] }), qc.invalidateQueries({ queryKey: ["medicines"] })]);
 
   async function doMark(d: DoseRow, status: "taken" | "skipped" | "late") {
     try {
