@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, NotebookPen, PhoneCall, CalendarClock, Activity as ActivityIcon, Droplets, BarChart3, Contact, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse } from "lucide-react";
+import { ChevronRight, NotebookPen, PhoneCall, CalendarClock, Activity as ActivityIcon, Droplets, BarChart3, Contact, Users, History, Download, Shield, Database, FlaskConical, Bell, HeartPulse, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AppShell, PageTitle } from "@/components/AppShell";
