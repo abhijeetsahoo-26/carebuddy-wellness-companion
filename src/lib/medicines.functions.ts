@@ -16,12 +16,14 @@ export const saveMedicine = createServerFn({ method: "POST" })
     const sb = context.supabase;
     let id = data.id;
     if (id) {
-      const { error } = await sb.from("medicines").update(data.medicine).eq("id", id);
+      const { data: old } = await sb.from("medicines").select("tablets_remaining").eq("id", id).maybeSingle();
+      const stockChanged = old?.tablets_remaining !== data.medicine.tablets_remaining;
+      const { error } = await sb.from("medicines").update({ ...data.medicine, ...(stockChanged ? { stock_set_at: new Date().toISOString() } : {}) }).eq("id", id);
       if (error) fail("Could not save the medicine.", error);
       // Times may have changed: clear future unmarked doses, then rebuild them.
       await sb.from("dose_logs").delete().eq("medicine_id", id).eq("status", "pending").gt("scheduled_at", new Date().toISOString());
     } else {
-      const { data: row, error } = await sb.from("medicines").insert({ ...data.medicine, user_id: context.userId }).select("id").single();
+      const { data: row, error } = await sb.from("medicines").insert({ ...data.medicine, user_id: context.userId, stock_set_at: data.medicine.tablets_remaining === null ? null : new Date().toISOString() }).select("id").single();
       if (error) fail("Could not save the medicine.", error);
       id = row.id;
     }

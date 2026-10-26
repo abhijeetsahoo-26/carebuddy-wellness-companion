@@ -83,3 +83,5 @@ export async function verifyAction(token: string): Promise<ActionClaims | null> 
 
 /** Exact lock-screen wording. Never includes medicine names. */
 export const REMINDER_TITLE = "Time for your medicine";
+// Fixed lock-screen titles by type. Never include medicine names or health data.
+export const PUSH_TITLES = { dose: REMINDER_TITLE, test: REMINDER_TITLE, refill: "Time to check your medicine supply", appointment: "You have an appointment" } as const;

@@ -14,7 +14,9 @@ function post(token, action) {
 self.addEventListener("push", (event) => {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch (_) {}
-  const title = "Time for your medicine";
+  // Fixed titles only: no medicine names or health data on the lock screen.
+  const TITLES = { refill: "Time to check your medicine supply", appointment: "You have an appointment" };
+  const title = TITLES[data.type] || "Time for your medicine";
   const opts = {
     tag: data.tag || "carebuddy",
     renotify: true,
@@ -46,7 +48,7 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
       for (const c of list) if ("focus" in c) return c.focus();
-      return self.clients.openWindow("/");
+      return self.clients.openWindow(data.type === "appointment" ? "/appointments" : data.type === "refill" ? "/medicines" : "/");
     }),
   );
 });

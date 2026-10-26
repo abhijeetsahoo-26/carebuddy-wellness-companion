@@ -95,6 +95,13 @@ export const medicineSchema = z
     end_date: isoDate.optional().nullable().transform((v) => v || null),
     prescribed_by: optText(100),
     notes: optText(1000),
+    tablets_remaining: z.union([z.number(), z.string()]).optional().nullable()
+      .transform((v) => (v === "" || v === null || v === undefined ? null : Number(v)))
+      .refine((v) => v === null || (Number.isFinite(v) && v >= 0 && v <= 10000), "Please enter how many are left, or leave it empty"),
+    tablets_per_dose: z.union([z.number(), z.string()]).optional()
+      .transform((v) => (v === "" || v === undefined ? 1 : Number(v)))
+      .refine((v) => Number.isFinite(v) && v > 0 && v <= 100, "Please enter how many you take each time"),
+    missed_dose_instruction: optText(500),
   })
   .refine((m) => !m.end_date || m.end_date >= m.start_date, { message: "End date must be on or after the start date", path: ["end_date"] });
 
