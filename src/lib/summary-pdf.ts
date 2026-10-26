@@ -28,11 +28,12 @@ export function summaryPdfBytes(doc: SummaryDoc): ArrayBuffer {
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(11);
     const lines = pdf.splitTextToSize(safe(t), W - 2 * M); pdf.text(lines, M, y); y += lines.length * 5 + 1;
   };
-  const table = (head: string[], body: string[][], empty = "Nothing in this range.") => {
+  const table = (head: string[], body: string[][], empty = "Nothing in this range.", small?: number) => {
     if (!body.length) { para(empty); y += 2; return; }
     autoTable(pdf, {
       startY: y, head: [head.map(safe)], body: body.map((r) => r.map(safe)), margin: { left: M, right: M, bottom: 20 },
       styles: { fontSize: 9, cellPadding: 1.5 }, headStyles: { fillColor: [46, 125, 90] },
+      columnStyles: small == null ? undefined : { [small]: { fontSize: 7, textColor: [100, 100, 100] } },
     });
     y = (pdf as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
   };
@@ -75,7 +76,8 @@ export function summaryPdfBytes(doc: SummaryDoc): ArrayBuffer {
       if (y > 220) { pdf.addPage(); y = M; }
       pdf.setFont("helvetica", "bold"); pdf.setFontSize(12); pdf.text(safe(`${n.label} (${n.unit})`), M, y); y += 3;
       if (n.rows.length > 1) { chart(pdf, M, y, W - 2 * M, 34, n.rows.map((r) => r.value), n.rows.map((r) => r.value2)); y += 40; }
-      table(["Date", "Time", `Value (${n.unit})`, "Source"], n.rows.map((r) => [r.date, r.time, r.display, r.source]));
+      if (n.kind === "temperature") table(["Date", "Time", "Value (as entered)", "", "Source"], n.rows.map((r) => [r.date, r.time, r.display, r.converted ?? "", r.source]), undefined, 3);
+      else table(["Date", "Time", `Value (${n.unit})`, "Source"], n.rows.map((r) => [r.date, r.time, r.display, r.source]));
     }
   }
   if (doc.waterSleep) {

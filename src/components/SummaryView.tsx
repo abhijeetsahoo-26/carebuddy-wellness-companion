@@ -58,7 +58,8 @@ export function SummaryView({ doc }: { doc: SummaryDoc }) {
                 </ResponsiveContainer>
               </div>
             )}
-            <Table head={["Date", "Time", `Value (${n.unit})`, "Source"]} rows={n.rows.map((r) => [r.date, r.time, r.display, r.source])} />
+            <Table head={["Date", "Time", n.kind === "temperature" ? "Value (as entered)" : `Value (${n.unit})`, "Source"]}
+              rows={n.rows.map((r) => [r.date, r.time, r.converted ? <>{r.display} <span className="text-xs text-muted-foreground">{r.converted}</span></> : r.display, r.source])} />
           </div>
         ))}
       </Section>}
@@ -104,7 +105,7 @@ function Section({ title, src, children }: { title: string; src: string; childre
   );
 }
 
-function Table({ head, rows, empty }: { head: string[]; rows: string[][]; empty?: string }) {
+function Table({ head, rows, empty }: { head: string[]; rows: ReactNode[][]; empty?: string }) {
   if (!rows.length) return <p className="mt-2 text-muted-foreground">{empty ?? "Nothing here."}</p>;
   return (
     <div className="mt-2 overflow-x-auto">

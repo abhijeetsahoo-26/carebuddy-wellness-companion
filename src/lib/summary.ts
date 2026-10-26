@@ -170,8 +170,8 @@ export function buildSummary(raw: SummaryRaw, req: SummaryRequest, now: Date = n
         return {
           date: istDate(new Date(v.measured_at)), time: fmtTime(v.measured_at),
           value: conv.value, value2: v.value2,
-          display: kind === "blood_pressure" && v.value2 != null ? `${v.value}/${v.value2}` : String(conv.value),
-          source: conv.converted ? `${SRC_YOU}, converted from ${v.unit} (${SRC_CALC})` : SRC_YOU,
+          ...temperatureDisplay(kind, v.value, v.value2, v.unit, conv.value),
+          source: kind === "temperature" ? `${SRC_YOU}; converted value: ${SRC_CALC}` : conv.converted ? `${SRC_YOU}, converted from ${v.unit} (${SRC_CALC})` : SRC_YOU,
         };
       });
     return { kind, label: VITAL_LABEL[kind]!, unit: VITAL_UNIT[kind]!, rows };
@@ -219,6 +219,15 @@ export function buildSummary(raw: SummaryRaw, req: SummaryRequest, now: Date = n
 export function prefillQuestions(appts: { starts_at: string; questions: string[] }[], now: Date = new Date()) {
   const next = appts.filter((a) => a.starts_at >= now.toISOString()).sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
   return next ? next.questions.map(clean).filter(Boolean) : [];
+}
+
+/** Temperatures show as entered, with the other unit as a smaller "converted" value beside it. */
+export function temperatureDisplay(kind: string, value: number, value2: number | null, unit: string, std: number) {
+  if (kind === "temperature") {
+    const other = unit === "°C" ? `${round1(value * 9 / 5 + 32)} °F` : `${round1((value - 32) * 5 / 9)} °C`;
+    return { display: `${Number(value)} ${unit}`, converted: `${other} (converted)` as string | null };
+  }
+  return { display: kind === "blood_pressure" && value2 != null ? `${value}/${value2}` : String(std), converted: null as string | null };
 }
 
 export function toStandardUnit(kind: string, value: number, unit: string) {
