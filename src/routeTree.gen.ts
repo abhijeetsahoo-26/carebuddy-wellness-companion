@@ -17,6 +17,7 @@ import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as DiaryRouteImport } from './routes/diary'
 import { Route as EmergencyRouteImport } from './routes/emergency'
+import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as MealsRouteImport } from './routes/meals'
 import { Route as MedicinesRouteImport } from './routes/medicines'
 import { Route as MoreRouteImport } from './routes/more'
@@ -27,6 +28,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReminderHealthRouteImport } from './routes/reminder-health'
 import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as VitalsRouteImport } from './routes/vitals'
+import { Route as WaterSleepRouteImport } from './routes/water-sleep'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
 import { Route as SettingsEmergencyNumbersRouteImport } from './routes/settings.emergency-numbers'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
@@ -71,6 +73,11 @@ const DiaryRoute = DiaryRouteImport.update({
 const EmergencyRoute = EmergencyRouteImport.update({
   id: '/emergency',
   path: '/emergency',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MealsRoute = MealsRouteImport.update({
@@ -123,6 +130,11 @@ const VitalsRoute = VitalsRouteImport.update({
   path: '/vitals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WaterSleepRoute = WaterSleepRouteImport.update({
+  id: '/water-sleep',
+  path: '/water-sleep',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WhatWeStoreRoute = WhatWeStoreRouteImport.update({
   id: '/what-we-store',
   path: '/what-we-store',
@@ -159,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
+  '/insights': typeof InsightsRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
   '/more': typeof MoreRoute
@@ -169,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
+  '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
@@ -184,6 +198,7 @@ export interface FileRoutesByTo {
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
+  '/insights': typeof InsightsRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
   '/more': typeof MoreRoute
@@ -194,6 +209,7 @@ export interface FileRoutesByTo {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
+  '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
@@ -210,6 +226,7 @@ export interface FileRoutesById {
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
+  '/insights': typeof InsightsRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
   '/more': typeof MoreRoute
@@ -220,6 +237,7 @@ export interface FileRoutesById {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
+  '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
@@ -237,6 +255,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/diary'
     | '/emergency'
+    | '/insights'
     | '/meals'
     | '/medicines'
     | '/more'
@@ -247,6 +266,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/vitals'
+    | '/water-sleep'
     | '/what-we-store'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
@@ -262,6 +282,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/diary'
     | '/emergency'
+    | '/insights'
     | '/meals'
     | '/medicines'
     | '/more'
@@ -272,6 +293,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/vitals'
+    | '/water-sleep'
     | '/what-we-store'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
@@ -287,6 +309,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/diary'
     | '/emergency'
+    | '/insights'
     | '/meals'
     | '/medicines'
     | '/more'
@@ -297,6 +320,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/vitals'
+    | '/water-sleep'
     | '/what-we-store'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
@@ -313,6 +337,7 @@ export interface RootRouteChildren {
   ContactsRoute: typeof ContactsRoute
   DiaryRoute: typeof DiaryRoute
   EmergencyRoute: typeof EmergencyRoute
+  InsightsRoute: typeof InsightsRoute
   MealsRoute: typeof MealsRoute
   MedicinesRoute: typeof MedicinesRoute
   MoreRoute: typeof MoreRoute
@@ -323,6 +348,7 @@ export interface RootRouteChildren {
   ReminderHealthRoute: typeof ReminderHealthRoute
   UnwellRoute: typeof UnwellRoute
   VitalsRoute: typeof VitalsRoute
+  WaterSleepRoute: typeof WaterSleepRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
   SettingsEmergencyNumbersRoute: typeof SettingsEmergencyNumbersRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
@@ -386,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/emergency'
       fullPath: '/emergency'
       preLoaderRoute: typeof EmergencyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/meals': {
@@ -458,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VitalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/water-sleep': {
+      id: '/water-sleep'
+      path: '/water-sleep'
+      fullPath: '/water-sleep'
+      preLoaderRoute: typeof WaterSleepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/what-we-store': {
       id: '/what-we-store'
       path: '/what-we-store'
@@ -505,6 +545,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactsRoute: ContactsRoute,
   DiaryRoute: DiaryRoute,
   EmergencyRoute: EmergencyRoute,
+  InsightsRoute: InsightsRoute,
   MealsRoute: MealsRoute,
   MedicinesRoute: MedicinesRoute,
   MoreRoute: MoreRoute,
@@ -515,6 +556,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReminderHealthRoute: ReminderHealthRoute,
   UnwellRoute: UnwellRoute,
   VitalsRoute: VitalsRoute,
+  WaterSleepRoute: WaterSleepRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
   SettingsEmergencyNumbersRoute: SettingsEmergencyNumbersRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
