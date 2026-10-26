@@ -28,7 +28,7 @@ export const saveProfile = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("profiles").upsert({
       user_id: context.userId,
-      ...data.fields,
+      ...Object.fromEntries(Object.entries(data.fields).filter(([, v]) => v !== undefined)),
       onboarding_step: data.step,
       ...(data.done ? { onboarding_done: true } : {}),
     });

@@ -85,7 +85,7 @@ function Onboarding() {
     setBusy(true);
     try {
       if (last && !skip) {
-        const r = emergencyContactSchema.safeParse({ name: f.ec_name, phone: f.ec_phone, relationship: f.ec_rel });
+        const r = emergencyContactSchema.safeParse({ name: f["ec_name"], phone: f["ec_phone"], relationship: f["ec_rel"] });
         if (!r.success) { toast.error(firstIssue(r)); return; }
         await addContact({ data: r.data });
       }
@@ -122,11 +122,11 @@ function Onboarding() {
           <>
             <div className="space-y-2">
               <Label htmlFor="allergies" className="text-base">Allergies (medicines, foods, other)</Label>
-              <Textarea id="allergies" className="text-base" value={f.allergies ?? ""} onChange={(e) => setF({ ...f, allergies: e.target.value })} />
+              <Textarea id="allergies" className="text-base" value={f["allergies"] ?? ""} onChange={(e) => setF({ ...f, allergies: e.target.value })} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="conditions" className="text-base">Health conditions your doctor told you about (optional)</Label>
-              <Textarea id="conditions" className="text-base" value={f.conditions ?? ""} onChange={(e) => setF({ ...f, conditions: e.target.value })} />
+              <Textarea id="conditions" className="text-base" value={f["conditions"] ?? ""} onChange={(e) => setF({ ...f, conditions: e.target.value })} />
             </div>
           </>
         )}
