@@ -69,3 +69,47 @@ export const idSchema = z.object({ id: z.string().uuid() });
 export function firstIssue(r: { success: false; error: z.ZodError }) {
   return r.error.issues[0]?.message ?? "Please check what you entered";
 }
+
+// ---- Medicines and reminders ----
+export const FOOD_OPTIONS = [
+  { value: "with", label: "With food" },
+  { value: "without", label: "Without food" },
+  { value: "any", label: "Any time" },
+] as const;
+export const FORMS = ["Tablet", "Capsule", "Syrup", "Drops", "Inhaler", "Injection", "Cream", "Other"] as const;
+
+const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Please pick a time");
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Please pick a date");
+
+export const medicineSchema = z
+  .object({
+    name: z.string().trim().min(1, "Please enter the medicine name").max(100),
+    generic_name: optText(100),
+    strength: optText(50),
+    form: optText(30),
+    dose_amount: optText(50),
+    times: z.array(hhmm).min(1, "Add at least one time").max(8, "Up to 8 times a day")
+      .refine((t) => new Set(t).size === t.length, "Each time can only be added once"),
+    food: z.enum(["with", "without", "any"]),
+    start_date: isoDate,
+    end_date: isoDate.optional().nullable().transform((v) => v || null),
+    prescribed_by: optText(100),
+    notes: optText(1000),
+  })
+  .refine((m) => !m.end_date || m.end_date >= m.start_date, { message: "End date must be on or after the start date", path: ["end_date"] });
+
+export const saveMedicineSchema = z.object({ id: z.string().uuid().optional(), medicine: medicineSchema });
+export const markDoseSchema = z.object({ id: z.string().uuid(), status: z.enum(["taken", "skipped", "late"]) });
+export const snoozeSchema = z.object({ id: z.string().uuid(), minutes: z.union([z.literal(10), z.literal(30)]) });
+export const reminderSettingsSchema = z
+  .object({
+    enabled: z.boolean(),
+    quiet_start: hhmm.nullable(),
+    quiet_end: hhmm.nullable(),
+  })
+  .refine((s) => (s.quiet_start === null) === (s.quiet_end === null), "Please set both quiet-hours times, or neither");
+export const pushSubSchema = z.object({
+  endpoint: z.string().url().startsWith("https://").max(1000),
+  p256dh: z.string().min(10).max(200),
+  auth: z.string().min(4).max(100),
+});

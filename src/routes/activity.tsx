@@ -22,7 +22,7 @@ const ENTITY: Record<string, string> = {
   medicine: "Medicine",
   doctor_plan: "Doctor's Plan",
 };
-const ACTION: Record<string, string> = { create: "added", edit: "changed", delete: "removed" };
+const ACTION: Record<string, string> = { create: "added", edit: "changed", delete: "removed", archive: "archived", restore: "restored" };
 
 function Activity() {
   const { user } = useAuth();
@@ -44,7 +44,7 @@ function Activity() {
           <ol className="space-y-2">
             {q.data.map((a) => (
               <li key={a.id} className="rounded-2xl border bg-card p-4">
-                <p className="text-lg font-semibold">{ENTITY[a.entity] ?? a.entity} {ACTION[a.action] ?? a.action}</p>
+                <p className="text-lg font-semibold">{ENTITY[a.entity] ?? a.entity} {ACTION[a.action] ?? a.action}{a.entity === "medicine" && a.summary ? `: ${a.summary}` : ""}</p>
                 <p className="text-muted-foreground">
                   By {a.actor_id === user?.id ? "you" : a.actor_id ? "someone you shared with" : "the system"} ·{" "}
                   {new Date(a.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}

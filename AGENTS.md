@@ -16,3 +16,7 @@
 - Audit entries are written only by the `public.write_audit(entity)` trigger; attach it to every medicine / Doctor's Plan / contact table. Why: users cannot forge or edit history.
 - Demo rows carry `is_demo = true`. Why: one-tap removal and clear labelling.
 - AI is never used for alerts, SOS or red-flag screening (`/unwell` uses a fixed list).
+- Doses come only from `public.generate_doses()` (idempotent, ON CONFLICT DO NOTHING); never insert scheduled doses from app code except demo history. Why: no duplicates.
+- Every push is claimed by inserting `reminder_log.dedupe_key` before sending. Why: a reminder is never sent twice, even if the job overlaps.
+- Notification payloads never contain medicine names or health data; the shown title is fixed. Why: lock-screen privacy.
+- `public/push-sw.js` is push-only; do not add page caching to it. Why: avoid stale previews and app versions.
