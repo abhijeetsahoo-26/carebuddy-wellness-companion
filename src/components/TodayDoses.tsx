@@ -120,6 +120,7 @@ export function TodayDoses() {
       )}
       <StreakCard />
       <WaterCard />
+      <Link to="/water-sleep" className="mt-2 inline-flex min-h-11 items-center font-semibold text-primary underline">Water goal, history and sleep</Link>
     </>
   );
 }

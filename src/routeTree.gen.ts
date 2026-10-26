@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CardRouteImport } from './routes/card'
 import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as DiaryRouteImport } from './routes/diary'
@@ -30,6 +31,7 @@ import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as VitalsRouteImport } from './routes/vitals'
 import { Route as WaterSleepRouteImport } from './routes/water-sleep'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
+import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as SettingsEmergencyNumbersRouteImport } from './routes/settings.emergency-numbers'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
 import { Route as ApiPublicPushActionRouteImport } from './routes/api/public/push-action'
@@ -53,6 +55,11 @@ const AppointmentsRoute = AppointmentsRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CardRoute = CardRouteImport.update({
+  id: '/card',
+  path: '/card',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConsentRoute = ConsentRouteImport.update({
@@ -140,6 +147,11 @@ const WhatWeStoreRoute = WhatWeStoreRouteImport.update({
   path: '/what-we-store',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CTokenRoute = CTokenRouteImport.update({
+  id: '/c/$token',
+  path: '/c/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsEmergencyNumbersRoute =
   SettingsEmergencyNumbersRouteImport.update({
     id: '/settings/emergency-numbers',
@@ -167,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/activity': typeof ActivityRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
+  '/card': typeof CardRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
@@ -184,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/c/$token': typeof CTokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -194,6 +208,7 @@ export interface FileRoutesByTo {
   '/activity': typeof ActivityRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
+  '/card': typeof CardRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
@@ -211,6 +226,7 @@ export interface FileRoutesByTo {
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/c/$token': typeof CTokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -222,6 +238,7 @@ export interface FileRoutesById {
   '/activity': typeof ActivityRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
+  '/card': typeof CardRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/diary': typeof DiaryRoute
@@ -239,6 +256,7 @@ export interface FileRoutesById {
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/c/$token': typeof CTokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -251,6 +269,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/appointments'
     | '/auth'
+    | '/card'
     | '/consent'
     | '/contacts'
     | '/diary'
@@ -268,6 +287,7 @@ export interface FileRouteTypes {
     | '/vitals'
     | '/water-sleep'
     | '/what-we-store'
+    | '/c/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -278,6 +298,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/appointments'
     | '/auth'
+    | '/card'
     | '/consent'
     | '/contacts'
     | '/diary'
@@ -295,6 +316,7 @@ export interface FileRouteTypes {
     | '/vitals'
     | '/water-sleep'
     | '/what-we-store'
+    | '/c/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -305,6 +327,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/appointments'
     | '/auth'
+    | '/card'
     | '/consent'
     | '/contacts'
     | '/diary'
@@ -322,6 +345,7 @@ export interface FileRouteTypes {
     | '/vitals'
     | '/water-sleep'
     | '/what-we-store'
+    | '/c/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -333,6 +357,7 @@ export interface RootRouteChildren {
   ActivityRoute: typeof ActivityRoute
   AppointmentsRoute: typeof AppointmentsRoute
   AuthRoute: typeof AuthRoute
+  CardRoute: typeof CardRoute
   ConsentRoute: typeof ConsentRoute
   ContactsRoute: typeof ContactsRoute
   DiaryRoute: typeof DiaryRoute
@@ -350,6 +375,7 @@ export interface RootRouteChildren {
   VitalsRoute: typeof VitalsRoute
   WaterSleepRoute: typeof WaterSleepRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
+  CTokenRoute: typeof CTokenRoute
   SettingsEmergencyNumbersRoute: typeof SettingsEmergencyNumbersRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
   ApiPublicPushActionRoute: typeof ApiPublicPushActionRoute
@@ -384,6 +410,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/card': {
+      id: '/card'
+      path: '/card'
+      fullPath: '/card'
+      preLoaderRoute: typeof CardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/consent': {
@@ -505,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhatWeStoreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/c/$token': {
+      id: '/c/$token'
+      path: '/c/$token'
+      fullPath: '/c/$token'
+      preLoaderRoute: typeof CTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/emergency-numbers': {
       id: '/settings/emergency-numbers'
       path: '/settings/emergency-numbers'
@@ -541,6 +581,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivityRoute: ActivityRoute,
   AppointmentsRoute: AppointmentsRoute,
   AuthRoute: AuthRoute,
+  CardRoute: CardRoute,
   ConsentRoute: ConsentRoute,
   ContactsRoute: ContactsRoute,
   DiaryRoute: DiaryRoute,
@@ -558,6 +599,7 @@ const rootRouteChildren: RootRouteChildren = {
   VitalsRoute: VitalsRoute,
   WaterSleepRoute: WaterSleepRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
+  CTokenRoute: CTokenRoute,
   SettingsEmergencyNumbersRoute: SettingsEmergencyNumbersRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
   ApiPublicPushActionRoute: ApiPublicPushActionRoute,

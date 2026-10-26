@@ -26,6 +26,11 @@ const ENTITY: Record<string, string> = {
   doctor_plan_limit: "Doctor's Plan limit",
   symptom_entry: "Symptom diary entry",
   emergency_number: "Emergency number",
+  appointment: "Appointment",
+  vital: "Health number",
+  water_goal: "Water goal",
+  sleep: "Sleep entry",
+  card_link: "Emergency card link",
 };
 const ACTION: Record<string, string> = { create: "added", edit: "changed", delete: "removed", archive: "archived", restore: "restored" };
 
