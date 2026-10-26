@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { EmergencyCallButtons } from "@/components/EmergencyCallButtons";
+import { EmergencyDirectory } from "@/components/EmergencyDirectory";
 
 export const Route = createFileRoute("/emergency")({
   head: () => ({
@@ -9,6 +9,8 @@ export const Route = createFileRoute("/emergency")({
       { name: "description", content: "Call 112 or 108 in one tap." },
       { property: "og:title", content: "Emergency help · CareBuddy" },
       { property: "og:description", content: "Call 112 or 108 in one tap." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Emergency,
@@ -25,10 +27,10 @@ function Emergency() {
         If you have chest pain or pressure, trouble breathing, or feel very unwell, call now.
       </p>
       <div className="mt-8">
-        <EmergencyCallButtons />
+        <EmergencyDirectory />
       </div>
       <p className="mt-8 text-base text-muted-foreground">
-        CareBuddy does not call anyone for you. Only you can place these calls.
+        CareBuddy does not call anyone for you. Tapping a button opens your phone's dialer; only you can place the call. Please check these numbers work in your area.
       </p>
       <p className="mt-3 text-base text-muted-foreground">
         This app cannot detect a heart attack or diagnose anything. I'm not a doctor. Please follow

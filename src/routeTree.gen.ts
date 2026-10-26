@@ -14,6 +14,7 @@ import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as ContactsRouteImport } from './routes/contacts'
+import { Route as DiaryRouteImport } from './routes/diary'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as MealsRouteImport } from './routes/meals'
 import { Route as MedicinesRouteImport } from './routes/medicines'
@@ -25,6 +26,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReminderHealthRouteImport } from './routes/reminder-health'
 import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
+import { Route as SettingsEmergencyNumbersRouteImport } from './routes/settings.emergency-numbers'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
 import { Route as ApiPublicPushActionRouteImport } from './routes/api/public/push-action'
 import { Route as ApiPublicJobsRemindersRouteImport } from './routes/api/public/jobs/reminders'
@@ -52,6 +54,11 @@ const ConsentRoute = ConsentRouteImport.update({
 const ContactsRoute = ContactsRouteImport.update({
   id: '/contacts',
   path: '/contacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiaryRoute = DiaryRouteImport.update({
+  id: '/diary',
+  path: '/diary',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmergencyRoute = EmergencyRouteImport.update({
@@ -109,6 +116,12 @@ const WhatWeStoreRoute = WhatWeStoreRouteImport.update({
   path: '/what-we-store',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsEmergencyNumbersRoute =
+  SettingsEmergencyNumbersRouteImport.update({
+    id: '/settings/emergency-numbers',
+    path: '/settings/emergency-numbers',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SettingsRemindersRoute = SettingsRemindersRouteImport.update({
   id: '/settings/reminders',
   path: '/settings/reminders',
@@ -131,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
+  '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
@@ -142,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
@@ -152,6 +167,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
+  '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
@@ -163,6 +179,7 @@ export interface FileRoutesByTo {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
@@ -174,6 +191,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
+  '/diary': typeof DiaryRoute
   '/emergency': typeof EmergencyRoute
   '/meals': typeof MealsRoute
   '/medicines': typeof MedicinesRoute
@@ -185,6 +203,7 @@ export interface FileRoutesById {
   '/reminder-health': typeof ReminderHealthRoute
   '/unwell': typeof UnwellRoute
   '/what-we-store': typeof WhatWeStoreRoute
+  '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
   '/api/public/jobs/reminders': typeof ApiPublicJobsRemindersRoute
@@ -197,6 +216,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/consent'
     | '/contacts'
+    | '/diary'
     | '/emergency'
     | '/meals'
     | '/medicines'
@@ -208,6 +228,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
@@ -218,6 +239,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/consent'
     | '/contacts'
+    | '/diary'
     | '/emergency'
     | '/meals'
     | '/medicines'
@@ -229,6 +251,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
@@ -239,6 +262,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/consent'
     | '/contacts'
+    | '/diary'
     | '/emergency'
     | '/meals'
     | '/medicines'
@@ -250,6 +274,7 @@ export interface FileRouteTypes {
     | '/reminder-health'
     | '/unwell'
     | '/what-we-store'
+    | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
     | '/api/public/jobs/reminders'
@@ -261,6 +286,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConsentRoute: typeof ConsentRoute
   ContactsRoute: typeof ContactsRoute
+  DiaryRoute: typeof DiaryRoute
   EmergencyRoute: typeof EmergencyRoute
   MealsRoute: typeof MealsRoute
   MedicinesRoute: typeof MedicinesRoute
@@ -272,6 +298,7 @@ export interface RootRouteChildren {
   ReminderHealthRoute: typeof ReminderHealthRoute
   UnwellRoute: typeof UnwellRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
+  SettingsEmergencyNumbersRoute: typeof SettingsEmergencyNumbersRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
   ApiPublicPushActionRoute: typeof ApiPublicPushActionRoute
   ApiPublicJobsRemindersRoute: typeof ApiPublicJobsRemindersRoute
@@ -312,6 +339,13 @@ declare module '@tanstack/react-router' {
       path: '/contacts'
       fullPath: '/contacts'
       preLoaderRoute: typeof ContactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diary': {
+      id: '/diary'
+      path: '/diary'
+      fullPath: '/diary'
+      preLoaderRoute: typeof DiaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/emergency': {
@@ -391,6 +425,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhatWeStoreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/emergency-numbers': {
+      id: '/settings/emergency-numbers'
+      path: '/settings/emergency-numbers'
+      fullPath: '/settings/emergency-numbers'
+      preLoaderRoute: typeof SettingsEmergencyNumbersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/reminders': {
       id: '/settings/reminders'
       path: '/settings/reminders'
@@ -421,6 +462,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConsentRoute: ConsentRoute,
   ContactsRoute: ContactsRoute,
+  DiaryRoute: DiaryRoute,
   EmergencyRoute: EmergencyRoute,
   MealsRoute: MealsRoute,
   MedicinesRoute: MedicinesRoute,
@@ -432,6 +474,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReminderHealthRoute: ReminderHealthRoute,
   UnwellRoute: UnwellRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
+  SettingsEmergencyNumbersRoute: SettingsEmergencyNumbersRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
   ApiPublicPushActionRoute: ApiPublicPushActionRoute,
   ApiPublicJobsRemindersRoute: ApiPublicJobsRemindersRoute,
