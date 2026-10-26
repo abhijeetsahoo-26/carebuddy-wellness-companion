@@ -42,7 +42,10 @@ function AuthPage() {
   async function submit(e: FormEvent) {
     e.preventDefault();
     const parsed = schema.safeParse({ email, password });
-    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
+      return;
+    }
     setBusy(true);
     const { email: em, password: pw } = parsed.data;
     const { data, error } =
@@ -54,7 +57,10 @@ function AuthPage() {
           })
         : await supabase.auth.signInWithPassword({ email: em, password: pw });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     if (mode === "signup" && !data.session) setSent(true);
   }
 
