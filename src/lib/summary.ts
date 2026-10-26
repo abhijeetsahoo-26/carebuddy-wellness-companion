@@ -143,7 +143,7 @@ export function buildSummary(raw: SummaryRaw, req: SummaryRequest, now: Date = n
     ...raw.unwell.filter((u) => inRange(new Date(u.created_at).toISOString())).map((u) => ({
       at: u.created_at, kind: "Unwell check", text: u.reasons.map(clean).join("; ") || "-", result: RESULT_LABEL[u.result] ?? u.result, severity: null as number | null,
     })),
-    ...diary.filter((e) => e.source !== "unwell_check").map((e) => ({
+    ...diary.filter((e) => e.source !== "check").map((e) => ({
       at: e.occurred_at, kind: "Diary", text: [e.symptoms.map(clean).join(", "), e.notes?.trim()].filter(Boolean).join(" - ") || "-",
       result: e.result ? RESULT_LABEL[e.result] ?? e.result : "-", severity: e.severity,
     })),
