@@ -113,3 +113,66 @@ export const pushSubSchema = z.object({
   p256dh: z.string().min(10).max(200),
   auth: z.string().min(4).max(100),
 });
+
+// ---- Doctor's Plan ----
+const optDate = z.string().optional().nullable().transform((v) => v || null)
+  .refine((v) => v === null || /^\d{4}-\d{2}-\d{2}$/.test(v), "Please pick a date");
+const optNum = (min: number, max: number, msg: string) =>
+  z.union([z.number(), z.string()]).optional().nullable()
+    .transform((v) => (v === "" || v === null || v === undefined ? null : Number(v)))
+    .refine((v) => v === null || (Number.isFinite(v) && v >= min && v <= max), msg);
+
+export const planMedicineSchema = z.object({
+  name: z.string().trim().min(1, "Please enter the medicine name").max(100),
+  dose: optText(100),
+  interval_text: optText(100),
+  max_per_day: optText(100),
+  doctor_name: optText(100),
+  date_advised: optDate,
+  confirmed: z.boolean().default(false),
+  confirmed_on: optDate,
+}).refine((m) => !m.confirmed || !!m.confirmed_on, { message: "Please add the date you confirmed with your doctor", path: ["confirmed_on"] });
+
+export const LIMIT_METRICS = [
+  { value: "heart_rate", label: "Heart rate", unit: "beats per minute", min: 20, max: 250 },
+  { value: "temperature", label: "Temperature", unit: "°F", min: 90, max: 110 },
+  { value: "oxygen", label: "Oxygen", unit: "%", min: 50, max: 100 },
+] as const;
+
+export const planLimitSchema = z.object({
+  metric: z.enum(["heart_rate", "temperature", "oxygen"]),
+  min_value: optNum(0, 250, "Please enter a sensible number"),
+  max_value: optNum(0, 250, "Please enter a sensible number"),
+  set_by: optText(100),
+  set_on: optDate,
+}).refine((l) => l.min_value === null || l.max_value === null || l.min_value <= l.max_value, { message: "Lowest must be below highest", path: ["max_value"] })
+  .refine((l) => l.min_value !== null || l.max_value !== null, { message: "Enter at least a lowest or highest value", path: ["min_value"] })
+  .refine((l) => !!l.set_by, { message: "Please say who set this limit", path: ["set_by"] });
+
+export const planSchema = z.object({
+  medicines: z.array(planMedicineSchema).max(30),
+  diet: z.object({ diet_rules: optText(2000), foods_to_avoid: optText(2000), special_instructions: optText(2000) }),
+  limits: z.array(planLimitSchema).max(3).refine((ls) => new Set(ls.map((l) => l.metric)).size === ls.length, "Each limit can only be added once"),
+  attachment_path: z.string().max(300).nullable().optional().transform((v) => v || null),
+  attachment_name: z.string().max(200).nullable().optional().transform((v) => v || null),
+  attachment_type: z.enum(["application/pdf", "image/jpeg", "image/png", "image/webp"]).nullable().optional().transform((v) => v || null),
+});
+export type PlanInput = z.input<typeof planSchema>;
+
+export const ATTACHMENT_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"] as const;
+export const ATTACHMENT_MAX_BYTES = 10 * 1024 * 1024;
+
+// ---- Meals ----
+export const MEAL_TYPES = [
+  { value: "breakfast", label: "Breakfast" },
+  { value: "lunch", label: "Lunch" },
+  { value: "dinner", label: "Dinner" },
+  { value: "snack", label: "Snack" },
+] as const;
+export const mealSchema = z.object({
+  meal_type: z.enum(["breakfast", "lunch", "dinner", "snack"]),
+  description: z.string().trim().min(2, "Please describe what you ate").max(500, "Please keep this under 500 characters"),
+  eaten_at: z.string().datetime({ offset: true, message: "Please pick a time" })
+    .refine((v) => new Date(v).getTime() <= Date.now() + 5 * 60e3, "The time can't be in the future"),
+});
+export const saveMealSchema = z.object({ id: z.string().uuid().optional(), meal: mealSchema });
