@@ -248,22 +248,22 @@ function EmergencyResult({ reasons, selfHarm, callDoctor }: { reasons: string[];
       <p className="mt-3 text-xl">This cannot detect a heart attack or diagnose anything. If you have chest pain, pressure, trouble breathing or feel very unwell, call 112 now.</p>
       {reasons.length > 0 && <><p className="mt-4 font-semibold">Because you said:</p><ul className="list-disc pl-6 text-lg">{reasons.map((x) => <li key={x}>{x}</li>)}</ul></>}
       <div className="mt-6 grid gap-3">
-        <Button asChild variant="secondary" className="h-24 w-full text-3xl font-bold">
+        <Button asChild variant="secondary" className="h-auto min-h-24 w-full whitespace-normal py-4 text-2xl font-bold sm:text-3xl">
           <a href={telHref(n("emergency", "112"))} aria-label="Call 112, police, fire, ambulance"><Phone className="size-9" /> Call {n("emergency", "112")} · Police, fire, ambulance</a>
         </Button>
-        <Button asChild variant="secondary" size="lg" className="h-16 w-full text-xl">
+        <Button asChild variant="secondary" size="lg" className="h-auto min-h-16 w-full whitespace-normal py-3 text-xl">
           <a href={telHref(n("ambulance_108", "108"))} aria-label="Call 108, ambulance"><Phone /> Call {n("ambulance_108", "108")} · Ambulance</a>
         </Button>
         {selfHarm && (
-          <Button asChild variant="secondary" size="lg" className="h-16 w-full text-xl">
+          <Button asChild variant="secondary" size="lg" className="h-auto min-h-16 w-full whitespace-normal py-3 text-xl">
             <a href={telHref(n("mental_health", "14416"))} aria-label="Call 14416, mental health support"><HeartHandshake /> Call {n("mental_health", "14416")} · Mental health support</a>
           </Button>
         )}
         {callDoctor}
         {contact && (
-          <Button asChild variant="outline" size="lg" className="w-full text-foreground"><a href={telHref(contact.phone)}><Phone /> Call {contact.name}{contact.relationship ? ` (${contact.relationship})` : ""}</a></Button>
+          <Button asChild variant="outline" size="lg" className="h-auto min-h-14 w-full whitespace-normal py-3 text-foreground"><a href={telHref(contact.phone)}><Phone /> Call {contact.name}{contact.relationship ? ` (${contact.relationship})` : ""}</a></Button>
         )}
-        <Button asChild variant="outline" size="lg" className="w-full text-foreground"><Link to="/emergency">All emergency numbers</Link></Button>
+        <Button asChild variant="outline" size="lg" className="h-auto min-h-14 w-full whitespace-normal py-3 text-foreground"><Link to="/emergency">All emergency numbers</Link></Button>
       </div>
       {selfHarm && <p className="mt-4 text-lg">You are not alone. Please talk to someone now — a helpline, a family member or a friend.</p>}
       <p className="mt-4">CareBuddy does not call anyone for you. Only you can place these calls.</p>

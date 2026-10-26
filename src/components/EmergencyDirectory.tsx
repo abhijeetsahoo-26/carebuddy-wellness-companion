@@ -12,7 +12,7 @@ export function EmergencyDirectory() {
   return (
     <div className="space-y-3">
       {first && (
-        <Button asChild variant="emergency" className="h-20 w-full text-2xl">
+        <Button asChild variant="emergency" className="h-auto min-h-20 w-full whitespace-normal py-4 text-xl sm:text-2xl">
           <a href={telHref(first.number)} aria-label={`Call ${first.number}, ${first.label}`}><Phone className="size-8" /> Call {first.number} · {first.label}</a>
         </Button>
       )}
@@ -20,7 +20,7 @@ export function EmergencyDirectory() {
         {rest.map((d) => {
           const Icon = ICON[d.key] ?? Phone;
           return (
-            <Button key={d.key} asChild variant={d.key.startsWith("ambulance") ? "emergency" : "outline"} size="lg" className="w-full justify-start">
+            <Button key={d.key} asChild variant={d.key.startsWith("ambulance") ? "emergency" : "outline"} size="lg" className="h-auto min-h-14 w-full justify-start whitespace-normal py-3 text-left">
               <a href={telHref(d.number)} aria-label={`Call ${d.number}, ${d.label}`}><Icon /> {d.number} · {d.label}</a>
             </Button>
           );
