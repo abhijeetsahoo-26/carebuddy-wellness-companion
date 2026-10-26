@@ -27,6 +27,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReminderHealthRouteImport } from './routes/reminder-health'
+import { Route as SickDayRouteImport } from './routes/sick-day'
 import { Route as SummaryRouteImport } from './routes/summary'
 import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as VitalsRouteImport } from './routes/vitals'
@@ -129,6 +130,11 @@ const ReminderHealthRoute = ReminderHealthRouteImport.update({
   path: '/reminder-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SickDayRoute = SickDayRouteImport.update({
+  id: '/sick-day',
+  path: '/sick-day',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SummaryRoute = SummaryRouteImport.update({
   id: '/summary',
   path: '/summary',
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/sick-day': typeof SickDayRoute
   '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
@@ -236,6 +243,7 @@ export interface FileRoutesByTo {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/sick-day': typeof SickDayRoute
   '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
@@ -268,6 +276,7 @@ export interface FileRoutesById {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/sick-day': typeof SickDayRoute
   '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/sick-day'
     | '/summary'
     | '/unwell'
     | '/vitals'
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/sick-day'
     | '/summary'
     | '/unwell'
     | '/vitals'
@@ -363,6 +374,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/sick-day'
     | '/summary'
     | '/unwell'
     | '/vitals'
@@ -395,6 +407,7 @@ export interface RootRouteChildren {
   PlanRoute: typeof PlanRoute
   PrivacyRoute: typeof PrivacyRoute
   ReminderHealthRoute: typeof ReminderHealthRoute
+  SickDayRoute: typeof SickDayRoute
   SummaryRoute: typeof SummaryRoute
   UnwellRoute: typeof UnwellRoute
   VitalsRoute: typeof VitalsRoute
@@ -536,6 +549,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReminderHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sick-day': {
+      id: '/sick-day'
+      path: '/sick-day'
+      fullPath: '/sick-day'
+      preLoaderRoute: typeof SickDayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/summary': {
       id: '/summary'
       path: '/summary'
@@ -635,6 +655,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlanRoute: PlanRoute,
   PrivacyRoute: PrivacyRoute,
   ReminderHealthRoute: ReminderHealthRoute,
+  SickDayRoute: SickDayRoute,
   SummaryRoute: SummaryRoute,
   UnwellRoute: UnwellRoute,
   VitalsRoute: VitalsRoute,

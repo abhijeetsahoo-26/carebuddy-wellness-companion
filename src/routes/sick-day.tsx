@@ -116,13 +116,13 @@ function Active({ session, initialAnswer }: { session: { id: string; started_at:
       <PageTitle title="Sick-day mode" sub={`Started ${formatTimeIST(session.started_at)}. Next check-in around ${formatTimeIST(nextCheckinAt(session.started_at))}.`} />
 
       {outcome === "emergency" && (
-        <section role="alert" className="mt-6 rounded-2xl bg-emergency p-5 text-emergency-foreground">
-          <AlertTriangle className="size-12" aria-hidden />
+        <section role="alert" className="mt-6 rounded-2xl border-2 border-emergency bg-emergency-soft p-5">
+          <AlertTriangle className="size-12 text-emergency" aria-hidden />
           <h2 className="mt-2 text-3xl font-bold">Emergency: get help now</h2>
           <p className="mt-2 text-lg">This cannot diagnose anything. Please call for help now.</p>
           <div className="mt-4"><EmergencyCallButtons /></div>
-          {flags.includes("self_harm") && <Button asChild variant="secondary" size="lg" className="mt-3 w-full"><a href="tel:14416">Call 14416 · Mental health support</a></Button>}
-          <Button asChild variant="secondary" size="lg" className="mt-3 w-full"><Link to="/emergency">All emergency numbers</Link></Button>
+          {flags.includes("self_harm") && <Button asChild variant="outline" size="lg" className="mt-3 w-full"><a href="tel:14416">Call 14416 · Mental health support</a></Button>}
+          <Button asChild variant="outline" size="lg" className="mt-3 w-full"><Link to="/emergency">All emergency numbers</Link></Button>
           <p className="mt-3">CareBuddy does not call anyone for you.</p>
         </section>
       )}

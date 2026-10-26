@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LogOut, Frown, NotebookPen } from "lucide-react";
+import { LogOut, Frown, NotebookPen, Leaf } from "lucide-react";
 import { TodayDoses } from "@/components/TodayDoses";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
@@ -50,6 +50,7 @@ function HomeBody() {
       <h1 className="mt-8 text-3xl font-bold">{greet}</h1>
       <p className="mt-1 text-lg text-muted-foreground">Here is your day.</p>
 
+      <SickDayBanner />
       <Button asChild variant="outline" size="lg" className="mt-6 w-full">
         <Link to="/unwell"><Frown /> I feel unwell</Link>
       </Button>
@@ -63,5 +64,24 @@ function HomeBody() {
         CareBuddy is a reminder and tracking helper. It is not a doctor and does not give medical advice.
       </p>
     </>
+  );
+}
+
+function SickDayBanner() {
+  const q = useQuery({
+    queryKey: ["sick-day"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("sick_day_sessions").select("id, started_at, checkins").is("ended_at", null).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  if (!q.data) return null;
+  return (
+    <section className="mt-6 rounded-2xl border-2 border-primary bg-secondary/60 p-5">
+      <h2 className="flex items-center gap-2 text-xl font-semibold"><Leaf className="size-6 text-primary" aria-hidden /> Sick-day mode is on</h2>
+      <p className="mt-1 text-lg">Water, light meals, rest, and your doctor's plan in one place.</p>
+      <Button asChild size="lg" className="mt-3 w-full"><Link to="/sick-day">Open sick-day view</Link></Button>
+    </section>
   );
 }
