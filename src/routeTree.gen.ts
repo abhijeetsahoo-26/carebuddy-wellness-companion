@@ -13,7 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConsentRouteImport } from './routes/consent'
 import { Route as EmergencyRouteImport } from './routes/emergency'
+import { Route as MealsRouteImport } from './routes/meals'
+import { Route as MedicinesRouteImport } from './routes/medicines'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PlanRouteImport } from './routes/plan'
+import { Route as UnwellRouteImport } from './routes/unwell'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,9 +39,29 @@ const EmergencyRoute = EmergencyRouteImport.update({
   path: '/emergency',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MealsRoute = MealsRouteImport.update({
+  id: '/meals',
+  path: '/meals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MedicinesRoute = MedicinesRouteImport.update({
+  id: '/medicines',
+  path: '/medicines',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanRoute = PlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnwellRoute = UnwellRouteImport.update({
+  id: '/unwell',
+  path: '/unwell',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -46,14 +70,22 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/emergency': typeof EmergencyRoute
+  '/meals': typeof MealsRoute
+  '/medicines': typeof MedicinesRoute
   '/onboarding': typeof OnboardingRoute
+  '/plan': typeof PlanRoute
+  '/unwell': typeof UnwellRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/emergency': typeof EmergencyRoute
+  '/meals': typeof MealsRoute
+  '/medicines': typeof MedicinesRoute
   '/onboarding': typeof OnboardingRoute
+  '/plan': typeof PlanRoute
+  '/unwell': typeof UnwellRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,14 +93,46 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/consent': typeof ConsentRoute
   '/emergency': typeof EmergencyRoute
+  '/meals': typeof MealsRoute
+  '/medicines': typeof MedicinesRoute
   '/onboarding': typeof OnboardingRoute
+  '/plan': typeof PlanRoute
+  '/unwell': typeof UnwellRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/consent' | '/emergency' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/consent'
+    | '/emergency'
+    | '/meals'
+    | '/medicines'
+    | '/onboarding'
+    | '/plan'
+    | '/unwell'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/consent' | '/emergency' | '/onboarding'
-  id: '__root__' | '/' | '/auth' | '/consent' | '/emergency' | '/onboarding'
+  to:
+    | '/'
+    | '/auth'
+    | '/consent'
+    | '/emergency'
+    | '/meals'
+    | '/medicines'
+    | '/onboarding'
+    | '/plan'
+    | '/unwell'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/consent'
+    | '/emergency'
+    | '/meals'
+    | '/medicines'
+    | '/onboarding'
+    | '/plan'
+    | '/unwell'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,7 +140,11 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConsentRoute: typeof ConsentRoute
   EmergencyRoute: typeof EmergencyRoute
+  MealsRoute: typeof MealsRoute
+  MedicinesRoute: typeof MedicinesRoute
   OnboardingRoute: typeof OnboardingRoute
+  PlanRoute: typeof PlanRoute
+  UnwellRoute: typeof UnwellRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -109,11 +177,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmergencyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/meals': {
+      id: '/meals'
+      path: '/meals'
+      fullPath: '/meals'
+      preLoaderRoute: typeof MealsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/medicines': {
+      id: '/medicines'
+      path: '/medicines'
+      fullPath: '/medicines'
+      preLoaderRoute: typeof MedicinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan': {
+      id: '/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof PlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unwell': {
+      id: '/unwell'
+      path: '/unwell'
+      fullPath: '/unwell'
+      preLoaderRoute: typeof UnwellRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -124,7 +220,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConsentRoute: ConsentRoute,
   EmergencyRoute: EmergencyRoute,
+  MealsRoute: MealsRoute,
+  MedicinesRoute: MedicinesRoute,
   OnboardingRoute: OnboardingRoute,
+  PlanRoute: PlanRoute,
+  UnwellRoute: UnwellRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
