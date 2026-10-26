@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { saveProfileSchema, emergencyContactSchema, idSchema } from "./validation";
-import { CONSENT_VERSION, DEMO_EMERGENCY_CONTACTS, DEMO_MEDICINES, DEMO_PLAN, DEMO_MEALS } from "./demo";
+import { CONSENT_VERSION, DEMO_EMERGENCY_CONTACTS, DEMO_MEDICINES, DEMO_PLAN, DEMO_MEALS, DEMO_DIARY } from "./demo";
 import { istDate, istDayStartUTC } from "./time";
 
 function fail(msg: string, e?: unknown): never {
@@ -96,6 +96,11 @@ export const loadDemoData = createServerFn({ method: "POST" })
       eaten_at: new Date(istDayStartUTC(istDate(new Date(Date.now() - m.daysAgo * 86400e3))).getTime() + m.minutes * 60e3).toISOString(),
     })));
     if (mlErr) fail("Could not add sample meals.", mlErr);
+    const { error: dyErr } = await sb.from("symptom_entries").insert(DEMO_DIARY.map((e) => ({
+      user_id: uid, is_demo: true, source: "manual", symptoms: [...e.symptoms], severity: e.severity, result: e.result, notes: e.notes,
+      occurred_at: new Date(istDayStartUTC(istDate(new Date(Date.now() - e.daysAgo * 86400e3))).getTime() + e.minutes * 60e3).toISOString(),
+    })));
+    if (dyErr) fail("Could not add sample diary entries.", dyErr);
     return { ok: true };
   });
 
@@ -106,6 +111,8 @@ export const clearDemoData = createServerFn({ method: "POST" })
     const b = await context.supabase.from("medicines").delete().eq("is_demo", true);
     const c = await context.supabase.from("doctor_plan_versions").delete().eq("is_demo", true);
     const d = await context.supabase.from("meals").delete().eq("is_demo", true);
+    const e = await context.supabase.from("symptom_entries").delete().eq("is_demo", true);
+    if (e.error) fail("Could not remove sample data.", e.error);
     if (a.error || b.error || c.error || d.error) fail("Could not remove sample data.", a.error ?? b.error ?? c.error ?? d.error);
     return { ok: true };
   });
@@ -114,7 +121,7 @@ export const exportMyData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const sb = context.supabase;
-    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu] = await Promise.all([
+    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed] = await Promise.all([
       sb.from("profiles").select("*").maybeSingle(),
       sb.from("consents").select("*"),
       sb.from("emergency_contacts").select("*"),
@@ -130,8 +137,11 @@ export const exportMyData = createServerFn({ method: "POST" })
       sb.from("doctor_plan_limits").select("*"),
       sb.from("meals").select("*").order("eaten_at"),
       sb.from("ai_usage").select("day, calls"),
+      sb.from("unwell_sessions").select("*").order("created_at"),
+      sb.from("symptom_entries").select("*").order("occurred_at"),
+      sb.from("emergency_directory").select("*").eq("user_id", context.userId),
     ]);
-    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error;
+    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error;
     if (err) fail("Could not prepare your data.", err);
     // Short-lived links so you can download your own uploaded prescriptions.
     const uploads: { version_no: number; file_name: string | null; link_valid_1h: string | null }[] = [];
@@ -161,6 +171,9 @@ export const exportMyData = createServerFn({ method: "POST" })
         prescription_uploads: uploads,
         meals: meals.data,
         ai_note_usage: aiu.data,
+        unwell_checks: us.data,
+        symptom_diary: se.data,
+        emergency_directory_edits: ed.data,
       },
       null,
       2,
@@ -181,7 +194,7 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       const { error: sErr } = await supabaseAdmin.storage.from("prescriptions").remove(files.map((f) => `${uid}/${f.name}`));
       if (sErr) fail("Could not delete your uploads. Please try again.", sErr);
     }
-    for (const t of ["meals", "ai_usage", "doctor_plan_limits", "doctor_plan_diet", "doctor_plan_medicines", "doctor_plan_versions", "reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
+    for (const t of ["symptom_entries", "unwell_sessions", "emergency_directory", "meals", "ai_usage", "doctor_plan_limits", "doctor_plan_diet", "doctor_plan_medicines", "doctor_plan_versions", "reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
       const { error } = await supabaseAdmin.from(t).delete().eq("user_id", uid);
       if (error) fail("Could not delete everything. Please try again.", error);
     }

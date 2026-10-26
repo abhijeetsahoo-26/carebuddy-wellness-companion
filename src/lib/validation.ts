@@ -176,3 +176,18 @@ export const mealSchema = z.object({
     .refine((v) => new Date(v).getTime() <= Date.now() + 5 * 60e3, "The time can't be in the future"),
 });
 export const saveMealSchema = z.object({ id: z.string().uuid().optional(), meal: mealSchema });
+
+// ---- Symptom diary and emergency directory ----
+export const diaryEntrySchema = z.object({
+  occurred_at: z.string().datetime({ offset: true, message: "Please pick a time" })
+    .refine((v) => new Date(v).getTime() <= Date.now() + 5 * 60e3, "The time can't be in the future"),
+  symptoms: z.array(z.string().trim().min(1).max(100)).min(1, "Please add at least one symptom").max(20),
+  severity: z.number().int().min(0).max(10).nullable(),
+  notes: optText(1000),
+});
+export const diaryNotesSchema = z.object({ id: z.string().uuid(), notes: optText(1000) });
+export const directoryNumberSchema = z.object({
+  key: z.string().regex(/^[a-z0-9_]{1,50}$/),
+  label: z.string().trim().min(1).max(60),
+  number: z.string().trim().regex(/^[0-9+]{2,15}$/, "Please enter digits only"),
+});

@@ -34,3 +34,8 @@ export const DEMO_MEALS = [
   { meal_type: "lunch", description: "Rice, dal and cabbage sabzi (sample)", minutes: 13 * 60, daysAgo: 1, ai_note: "Rice gives carbohydrates.\nDal adds protein, and cabbage adds fibre and vitamin C." },
   { meal_type: "dinner", description: "Two chapatis with paneer curry (sample)", minutes: 20 * 60, daysAgo: 1, ai_note: "Chapatis give carbohydrates and some fibre.\nPaneer adds protein and calcium." },
 ] as const;
+
+export const DEMO_DIARY = [
+  { symptoms: ["Runny or blocked nose (sample)", "Tiredness"], severity: 2, result: "self_care" as const, notes: "Sample entry: made up for trying the app.", daysAgo: 2, minutes: 9 * 60 },
+  { symptoms: ["Headache (sample)"], severity: 4, result: null, notes: "Sample entry: felt better after rest.", daysAgo: 1, minutes: 18 * 60 },
+] as const;
