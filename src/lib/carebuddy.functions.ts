@@ -143,7 +143,7 @@ export const exportMyData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const sb = context.supabase;
-    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed, ap, vt, hy, sl, ct, pr, dsum, slinks, sviews, sick, cg, cglog, mine] = await Promise.all([
+    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed, ap, vt, hy, sl, ct, pr, dsum, slinks, sviews, sick, cg, cglog, mine, devs] = await Promise.all([
       sb.from("profiles").select("*").maybeSingle(),
       sb.from("consents").select("*"),
       sb.from("emergency_contacts").select("*"),
@@ -158,7 +158,7 @@ export const exportMyData = createServerFn({ method: "POST" })
       sb.from("doctor_plan_diet").select("*"),
       sb.from("doctor_plan_limits").select("*"),
       sb.from("meals").select("*").order("eaten_at"),
-      sb.from("ai_usage").select("day, calls"),
+      sb.from("ai_usage").select("day, calls, idea_calls"),
       sb.from("unwell_sessions").select("*").order("created_at"),
       sb.from("symptom_entries").select("*").order("occurred_at"),
       sb.from("emergency_directory").select("*").eq("user_id", context.userId),
@@ -175,8 +175,9 @@ export const exportMyData = createServerFn({ method: "POST" })
       sb.from("caregiver_grants").select("id, label, status, can_adherence, can_missed_alerts, can_appointments, invite_expires_at, accepted_at, created_at, updated_at").eq("user_id", context.userId),
       sb.from("caregiver_access_log").select("grant_id, categories, viewed_at").order("viewed_at"),
       sb.rpc("my_caregiving"),
+      sb.from("push_subscriptions").select("id, created_at, updated_at"),
     ]);
-    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error ?? ap.error ?? vt.error ?? hy.error ?? sl.error ?? ct.error ?? pr.error ?? dsum.error ?? slinks.error ?? sviews.error ?? sick.error ?? cg.error ?? cglog.error ?? mine.error;
+    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error ?? ap.error ?? vt.error ?? hy.error ?? sl.error ?? ct.error ?? pr.error ?? dsum.error ?? slinks.error ?? sviews.error ?? sick.error ?? cg.error ?? cglog.error ?? mine.error ?? devs.error;
     if (err) fail("Could not prepare your data.", err);
     // Short-lived links so you can download your own uploaded prescriptions.
     const uploads: { version_no: number; file_name: string | null; link_valid_1h: string | null }[] = [];
@@ -197,6 +198,7 @@ export const exportMyData = createServerFn({ method: "POST" })
         water: water.data,
         reminder_settings: rsettings.data,
         reminders_sent: rlog.data,
+        reminder_devices: devs.data,
         doctor_plan: (pv.data ?? []).map((v) => ({
           ...v,
           medicines: (pm.data ?? []).filter((m) => m.version_id === v.id),
