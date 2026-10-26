@@ -135,7 +135,7 @@ export const exportMyData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const sb = context.supabase;
-    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed, ap, vt, hy, sl, ct, pr] = await Promise.all([
+    const [profile, consents, contacts, audit, medicines, doses, water, rsettings, rlog, pv, pm, pd, pl, meals, aiu, us, se, ed, ap, vt, hy, sl, ct, pr, dsum, slinks, sviews] = await Promise.all([
       sb.from("profiles").select("*").maybeSingle(),
       sb.from("consents").select("*"),
       sb.from("emergency_contacts").select("*"),
@@ -160,8 +160,11 @@ export const exportMyData = createServerFn({ method: "POST" })
       sb.from("sleep_logs").select("*").order("night"),
       sb.from("emergency_card_tokens").select("id, created_at, revoked_at"),
       sb.from("profiles").select("card_prefs").maybeSingle(),
+      sb.from("doctor_summaries").select("*").order("created_at"),
+      sb.from("share_links").select("id, range_from, range_to, sections, questions, expires_at, revoked_at, view_count, first_viewed_at, last_viewed_at, created_at").order("created_at"),
+      sb.from("share_link_views").select("link_id, viewed_at").order("viewed_at"),
     ]);
-    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error ?? ap.error ?? vt.error ?? hy.error ?? sl.error ?? ct.error ?? pr.error;
+    const err = profile.error ?? consents.error ?? contacts.error ?? audit.error ?? medicines.error ?? doses.error ?? water.error ?? rsettings.error ?? rlog.error ?? pv.error ?? pm.error ?? pd.error ?? pl.error ?? meals.error ?? aiu.error ?? us.error ?? se.error ?? ed.error ?? ap.error ?? vt.error ?? hy.error ?? sl.error ?? ct.error ?? pr.error ?? dsum.error ?? slinks.error ?? sviews.error;
     if (err) fail("Could not prepare your data.", err);
     // Short-lived links so you can download your own uploaded prescriptions.
     const uploads: { version_no: number; file_name: string | null; link_valid_1h: string | null }[] = [];
@@ -199,6 +202,9 @@ export const exportMyData = createServerFn({ method: "POST" })
         water_goals: hy.data,
         sleep: sl.data,
         emergency_card: { shown_items: pr.data?.card_prefs ?? null, share_links: ct.data },
+        doctor_summaries: dsum.data,
+        doctor_share_links: slinks.data,
+        doctor_share_link_views: sviews.data,
       },
       null,
       2,
@@ -219,7 +225,7 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       const { error: sErr } = await supabaseAdmin.storage.from("prescriptions").remove(files.map((f) => `${uid}/${f.name}`));
       if (sErr) fail("Could not delete your uploads. Please try again.", sErr);
     }
-    for (const t of ["emergency_card_tokens", "appointments", "vitals", "hydration_logs", "sleep_logs", "symptom_entries", "unwell_sessions", "emergency_directory", "meals", "ai_usage", "doctor_plan_limits", "doctor_plan_diet", "doctor_plan_medicines", "doctor_plan_versions", "reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
+    for (const t of ["share_link_views", "share_links", "doctor_summaries", "emergency_card_tokens", "appointments", "vitals", "hydration_logs", "sleep_logs", "symptom_entries", "unwell_sessions", "emergency_directory", "meals", "ai_usage", "doctor_plan_limits", "doctor_plan_diet", "doctor_plan_medicines", "doctor_plan_versions", "reminder_log", "push_subscriptions", "reminder_settings", "water_logs", "dose_logs", "medicines", "emergency_contacts", "audit_log", "consents", "profiles"] as const) {
       const { error } = await supabaseAdmin.from(t).delete().eq("user_id", uid);
       if (error) fail("Could not delete everything. Please try again.", error);
     }

@@ -36,6 +36,13 @@
       "when": 1793003189440,
       "tag": "0004_tracking_features",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793003738919,
+      "tag": "0005_doctor_summary_sharing",
+      "breakpoints": true
     }
   ]
 }

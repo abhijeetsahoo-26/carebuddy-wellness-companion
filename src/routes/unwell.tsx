@@ -209,7 +209,7 @@ function Result({ r, reasons, answers }: { r: UnwellResult; reasons: string[]; a
           <Reasons reasons={reasons} />
           <div className="mt-5 grid gap-3">
             {callDoctor ?? <p className="text-muted-foreground">No doctor phone saved. You can add it under More.</p>}
-            <Button size="lg" variant="outline" className="w-full" onClick={() => toast.info("The summary for your doctor (PDF) is coming in a later update.")}><FileText /> Prepare summary for doctor</Button>
+            <Button asChild size="lg" variant="outline" className="w-full"><Link to="/summary"><FileText /> Prepare summary for doctor</Link></Button>
           </div>
           <p className="mt-4 text-muted-foreground">If you start to feel worse, tap Emergency.</p>
         </section>

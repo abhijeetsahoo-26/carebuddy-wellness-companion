@@ -27,11 +27,13 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReminderHealthRouteImport } from './routes/reminder-health'
+import { Route as SummaryRouteImport } from './routes/summary'
 import { Route as UnwellRouteImport } from './routes/unwell'
 import { Route as VitalsRouteImport } from './routes/vitals'
 import { Route as WaterSleepRouteImport } from './routes/water-sleep'
 import { Route as WhatWeStoreRouteImport } from './routes/what-we-store'
 import { Route as CTokenRouteImport } from './routes/c.$token'
+import { Route as STokenRouteImport } from './routes/s.$token'
 import { Route as SettingsEmergencyNumbersRouteImport } from './routes/settings.emergency-numbers'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
 import { Route as ApiPublicPushActionRouteImport } from './routes/api/public/push-action'
@@ -127,6 +129,11 @@ const ReminderHealthRoute = ReminderHealthRouteImport.update({
   path: '/reminder-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SummaryRoute = SummaryRouteImport.update({
+  id: '/summary',
+  path: '/summary',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnwellRoute = UnwellRouteImport.update({
   id: '/unwell',
   path: '/unwell',
@@ -150,6 +157,11 @@ const WhatWeStoreRoute = WhatWeStoreRouteImport.update({
 const CTokenRoute = CTokenRouteImport.update({
   id: '/c/$token',
   path: '/c/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const STokenRoute = STokenRouteImport.update({
+  id: '/s/$token',
+  path: '/s/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsEmergencyNumbersRoute =
@@ -193,11 +205,13 @@ export interface FileRoutesByFullPath {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -222,11 +236,13 @@ export interface FileRoutesByTo {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -252,11 +268,13 @@ export interface FileRoutesById {
   '/plan': typeof PlanRoute
   '/privacy': typeof PrivacyRoute
   '/reminder-health': typeof ReminderHealthRoute
+  '/summary': typeof SummaryRoute
   '/unwell': typeof UnwellRoute
   '/vitals': typeof VitalsRoute
   '/water-sleep': typeof WaterSleepRoute
   '/what-we-store': typeof WhatWeStoreRoute
   '/c/$token': typeof CTokenRoute
+  '/s/$token': typeof STokenRoute
   '/settings/emergency-numbers': typeof SettingsEmergencyNumbersRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/api/public/push-action': typeof ApiPublicPushActionRoute
@@ -283,11 +301,13 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/summary'
     | '/unwell'
     | '/vitals'
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -312,11 +332,13 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/summary'
     | '/unwell'
     | '/vitals'
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -341,11 +363,13 @@ export interface FileRouteTypes {
     | '/plan'
     | '/privacy'
     | '/reminder-health'
+    | '/summary'
     | '/unwell'
     | '/vitals'
     | '/water-sleep'
     | '/what-we-store'
     | '/c/$token'
+    | '/s/$token'
     | '/settings/emergency-numbers'
     | '/settings/reminders'
     | '/api/public/push-action'
@@ -371,11 +395,13 @@ export interface RootRouteChildren {
   PlanRoute: typeof PlanRoute
   PrivacyRoute: typeof PrivacyRoute
   ReminderHealthRoute: typeof ReminderHealthRoute
+  SummaryRoute: typeof SummaryRoute
   UnwellRoute: typeof UnwellRoute
   VitalsRoute: typeof VitalsRoute
   WaterSleepRoute: typeof WaterSleepRoute
   WhatWeStoreRoute: typeof WhatWeStoreRoute
   CTokenRoute: typeof CTokenRoute
+  STokenRoute: typeof STokenRoute
   SettingsEmergencyNumbersRoute: typeof SettingsEmergencyNumbersRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
   ApiPublicPushActionRoute: typeof ApiPublicPushActionRoute
@@ -510,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReminderHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/summary': {
+      id: '/summary'
+      path: '/summary'
+      fullPath: '/summary'
+      preLoaderRoute: typeof SummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unwell': {
       id: '/unwell'
       path: '/unwell'
@@ -543,6 +576,13 @@ declare module '@tanstack/react-router' {
       path: '/c/$token'
       fullPath: '/c/$token'
       preLoaderRoute: typeof CTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$token': {
+      id: '/s/$token'
+      path: '/s/$token'
+      fullPath: '/s/$token'
+      preLoaderRoute: typeof STokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/emergency-numbers': {
@@ -595,11 +635,13 @@ const rootRouteChildren: RootRouteChildren = {
   PlanRoute: PlanRoute,
   PrivacyRoute: PrivacyRoute,
   ReminderHealthRoute: ReminderHealthRoute,
+  SummaryRoute: SummaryRoute,
   UnwellRoute: UnwellRoute,
   VitalsRoute: VitalsRoute,
   WaterSleepRoute: WaterSleepRoute,
   WhatWeStoreRoute: WhatWeStoreRoute,
   CTokenRoute: CTokenRoute,
+  STokenRoute: STokenRoute,
   SettingsEmergencyNumbersRoute: SettingsEmergencyNumbersRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
   ApiPublicPushActionRoute: ApiPublicPushActionRoute,
