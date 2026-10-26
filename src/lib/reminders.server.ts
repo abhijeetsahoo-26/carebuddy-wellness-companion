@@ -5,6 +5,8 @@ import type { Database } from "@/integrations/supabase/types";
 import { inQuietHours, SECOND_REMINDER_MIN } from "./time";
 import { REMINDER_TITLE, PUSH_TITLES, sendPush, signAction } from "./push.server";
 import { supplyStatus } from "./tracking";
+import { dueSickPushes, SICK_TITLES } from "./sickday";
+import { CAREGIVER_ALERT_TITLE, MISSED_AFTER_H, MISSED_LOOKBACK_H, firstName, shouldAlertCaregiver } from "./caregiver";
 
 type Admin = SupabaseClient<Database>;
 const LOOKBACK_H = 12;
@@ -38,12 +40,56 @@ async function claim(admin: Admin, row: Database["public"]["Tables"]["reminder_l
 export async function runReminderJob(admin: Admin, now = new Date()) {
   await admin.rpc("generate_doses", { _user: null as unknown as string, _days: 2 });
 
+  const side = (await runSickDay(admin, now)) + (await runCaregiverAlerts(admin, now));
   const { data: settings } = await admin.from("reminder_settings").select("user_id, quiet_start, quiet_end").eq("enabled", true);
-  if (!settings?.length) return { sent: 0 };
+  if (!settings?.length) return { sent: side };
   const byUser = new Map(settings.map((s) => [s.user_id, s]));
   const extra = await runSupplyAndAppointments(admin, byUser, now);
   const r = await runDoseReminders(admin, byUser, now);
-  return { sent: r.sent + extra };
+  return { sent: r.sent + extra + side };
+}
+
+// Sick-day: water every 2 hours while awake, check-in every 6 hours. Fixed, generic titles.
+async function runSickDay(admin: Admin, now: Date) {
+  const { data: sessions } = await admin.from("sick_day_sessions").select("id, user_id, started_at").is("ended_at", null).eq("is_demo", false).limit(500);
+  if (!sessions?.length) return 0;
+  const { data: qs } = await admin.from("reminder_settings").select("user_id, quiet_start, quiet_end").in("user_id", sessions.map((s) => s.user_id));
+  let sent = 0;
+  for (const s of sessions) {
+    const q = qs?.find((x) => x.user_id === s.user_id);
+    for (const p of dueSickPushes(s, now, q?.quiet_start ?? null, q?.quiet_end ?? null)) {
+      const logId = await claim(admin, { user_id: s.user_id, kind: p.kind, dedupe_key: p.key, scheduled_for: now.toISOString() });
+      if (!logId) continue;
+      const type = p.kind === "sick_water" ? "sick_water" : "sick_checkin";
+      if ((await deliverToUser(admin, s.user_id, logId, { type, title: p.kind === "sick_water" ? SICK_TITLES.water : SICK_TITLES.checkin, tag: `${type}-${s.id}` })) === "sent") sent++;
+    }
+  }
+  return sent;
+}
+
+// Caregiver alert: a dose still "Not marked" more than 2 hours after its time. Only the first name is sent.
+async function runCaregiverAlerts(admin: Admin, now: Date) {
+  const { data: grants } = await admin.from("caregiver_grants")
+    .select("id, user_id, caregiver_id, status, can_adherence, can_missed_alerts, can_appointments, alerts_enabled")
+    .eq("status", "active").eq("can_missed_alerts", true).eq("alerts_enabled", true).eq("is_demo", false).not("caregiver_id", "is", null);
+  if (!grants?.length) return 0;
+  const owners = [...new Set(grants.map((g) => g.user_id))];
+  const [{ data: doses }, { data: profs }] = await Promise.all([
+    admin.from("dose_logs").select("id, user_id, scheduled_at, status").in("user_id", owners).eq("status", "pending").eq("is_demo", false)
+      .lte("scheduled_at", new Date(now.getTime() - MISSED_AFTER_H * 3600e3).toISOString())
+      .gte("scheduled_at", new Date(now.getTime() - MISSED_LOOKBACK_H * 3600e3).toISOString()).limit(2000),
+    admin.from("profiles").select("user_id, full_name").in("user_id", owners),
+  ]);
+  let sent = 0;
+  for (const g of grants) {
+    const name = firstName(profs?.find((p) => p.user_id === g.user_id)?.full_name);
+    for (const d of (doses ?? []).filter((x) => x.user_id === g.user_id && shouldAlertCaregiver(g, x, now))) {
+      const logId = await claim(admin, { user_id: g.caregiver_id!, kind: "caregiver_missed", dedupe_key: `cg_missed:${g.id}:${d.id}`, scheduled_for: d.scheduled_at });
+      if (!logId) continue;
+      if ((await deliverToUser(admin, g.caregiver_id!, logId, { type: "caregiver_missed", title: CAREGIVER_ALERT_TITLE, first_name: name, tag: `cg-${g.id}` })) === "sent") sent++;
+    }
+  }
+  return sent;
 }
 
 type Settings = Map<string, { user_id: string; quiet_start: string | null; quiet_end: string | null }>;

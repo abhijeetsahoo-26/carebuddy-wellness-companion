@@ -15,7 +15,11 @@ self.addEventListener("push", (event) => {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch (_) {}
   // Fixed titles only: no medicine names or health data on the lock screen.
-  const TITLES = { refill: "Time to check your medicine supply", appointment: "You have an appointment" };
+  const TITLES = {
+    refill: "Time to check your medicine supply", appointment: "You have an appointment",
+    sick_water: "Time for some water", sick_checkin: "How are you feeling now?",
+    caregiver_missed: "A dose may have been missed",
+  };
   const title = TITLES[data.type] || "Time for your medicine";
   const opts = {
     tag: data.tag || "carebuddy",
@@ -24,6 +28,15 @@ self.addEventListener("push", (event) => {
     badge: "/icon-192.png",
     data,
   };
+  if (data.type === "caregiver_missed" && data.first_name) opts.body = String(data.first_name).slice(0, 40);
+  if (data.type === "sick_checkin") {
+    opts.requireInteraction = true;
+    opts.actions = [
+      { action: "better", title: "Better" },
+      { action: "same", title: "Same" },
+      { action: "worse", title: "Worse" },
+    ];
+  }
   if (data.type === "dose") {
     opts.requireInteraction = true;
     opts.actions = [
@@ -45,10 +58,15 @@ self.addEventListener("notificationclick", (event) => {
     event.waitUntil(post(data.token, event.action));
     return;
   }
+  if (data.type === "sick_checkin" && ["better", "same", "worse"].includes(event.action)) {
+    event.waitUntil(self.clients.openWindow("/sick-day?answer=" + event.action));
+    return;
+  }
+  const PATHS = { appointment: "/appointments", refill: "/medicines", sick_water: "/sick-day", sick_checkin: "/sick-day", caregiver_missed: "/caregiving" };
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
       for (const c of list) if ("focus" in c) return c.focus();
-      return self.clients.openWindow(data.type === "appointment" ? "/appointments" : data.type === "refill" ? "/medicines" : "/");
+      return self.clients.openWindow(PATHS[data.type] || "/");
     }),
   );
 });
