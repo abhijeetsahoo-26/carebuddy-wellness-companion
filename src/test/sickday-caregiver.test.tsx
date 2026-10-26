@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { checkinOutcome, dueSickPushes, checkinSchema } from "@/lib/sickday";
+import { checkinOutcome, dueSickPushes, checkinSchema, pastCheckinLimit } from "@/lib/sickday";
 import { caregiverCan, shouldAlertCaregiver, inviteUsable, inviteSchema, type GrantLite } from "@/lib/caregiver";
 import { checkMealIdeas, avoidTerms } from "@/lib/meal-note";
 
@@ -23,6 +23,12 @@ describe("sick-day pushes", () => {
   it("nothing at night or in quiet hours", () => {
     expect(dueSickPushes(s, ist("2026-10-20", "23:30"), null, null)).toEqual([]);
     expect(dueSickPushes(s, ist("2026-10-20", "14:30"), "14:00", "16:00")).toEqual([]);
+  });
+  it("check-ins stop after 3 days (72 hours)", () => {
+    expect(dueSickPushes(s, ist("2026-10-23", "07:59"), null, null).map((p) => p.kind)).toContain("sick_checkin");
+    expect(dueSickPushes(s, ist("2026-10-23", "08:00"), null, null).map((p) => p.kind)).not.toContain("sick_checkin");
+    expect(pastCheckinLimit(s.started_at, ist("2026-10-23", "07:59"))).toBe(false);
+    expect(pastCheckinLimit(s.started_at, ist("2026-10-23", "08:00"))).toBe(true);
   });
 });
 

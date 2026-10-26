@@ -57,6 +57,13 @@
       "when": 1793004385550,
       "tag": "0007_caregiver_list",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793005891742,
+      "tag": "0008_emergency_card_link_expiry",
+      "breakpoints": true
     }
   ]
 }

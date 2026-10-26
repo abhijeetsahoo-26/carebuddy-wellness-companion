@@ -5,20 +5,30 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
+import { Landing } from "@/components/Landing";
+import { LoadingState } from "@/components/States";
+import { useAccount } from "@/hooks/useAccount";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CareBuddy · Your medicine and meal companion" },
-      { name: "description", content: "Reminders and tracking for medicines, meals and symptoms." },
-      { property: "og:title", content: "CareBuddy" },
-      { property: "og:description", content: "Reminders and tracking for medicines, meals and symptoms." },
+      { title: "CareBuddy · Your calm daily health companion" },
+      { name: "description", content: "Medicine reminders, meal and symptom tracking, and a summary to show your doctor. Not a doctor or emergency service." },
+      { property: "og:title", content: "CareBuddy · Your calm daily health companion" },
+      { property: "og:description", content: "Medicine reminders, meal and symptom tracking, and a summary to show your doctor." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://carebuddy-wellness-companion.lovable.app/" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
 });
 
 function Home() {
+  // Signed-out visitors see the public landing page; signed-in users get Today.
+  const { user, authLoading } = useAccount();
+  if (authLoading) return <LoadingState />;
+  if (!user) return <Landing />;
   return (
     <AppShell>
       <HomeBody />

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { buildSummary, defaultRange, prefillQuestions, summaryRequestSchema, shareRequestSchema, ALL_SECTIONS, SUMMARY_FOOTER, type SummaryRaw } from "@/lib/summary";
 import { exportFiles, toCsv } from "@/lib/data-export";
+import { withConvertedTemperature } from "@/lib/summary";
 
 const NOW = new Date("2026-10-20T06:30:00Z"); // 12:00 India time
 const at = (day: string, hhmm: string) => new Date(`${day}T${hhmm}:00+05:30`).toISOString();
@@ -89,5 +90,17 @@ describe("data export", () => {
     const f = exportFiles(JSON.stringify({ exported_at: "x", user_id: "u", meals: [{ id: 1 }], profile: { full_name: "A" } }));
     expect(Object.keys(f).sort()).toEqual(["README.txt", "carebuddy-data.json", "meals.csv", "profile.csv"]);
     expect(f["README.txt"]).toContain("meals.csv");
+  });
+});
+
+describe("download temperatures", () => {
+  it("keeps °C as entered with °F beside it", () => {
+    const [r] = withConvertedTemperature([{ kind: "temperature", value: 38.5, value2: null, unit: "°C" }]);
+    expect(r).toMatchObject({ value: 38.5, unit: "°C", converted: "101.3 °F (converted)" });
+  });
+  it("keeps °F as entered with °C beside it", () => {
+    const [r] = withConvertedTemperature([{ kind: "temperature", value: 101.3, value2: null, unit: "°F" }]);
+    expect(r).toMatchObject({ value: 101.3, unit: "°F", converted: "38.5 °C (converted)" });
+    expect(Object.keys(r!)).toEqual(["kind", "value", "value2", "unit", "converted"]);
   });
 });

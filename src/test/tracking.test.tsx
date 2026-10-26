@@ -82,3 +82,15 @@ describe("appointment questions from diary", () => {
     expect(q).toEqual(["Headache: 18 Oct"]);
   });
 });
+
+import { cardLinkExpiresAt, DEFAULT_CARD_LINK_EXPIRY } from "@/lib/tracking";
+describe("emergency card link expiry", () => {
+  const now = new Date("2026-10-26T09:00:00.000Z");
+  it("defaults to 30 days", () => expect(DEFAULT_CARD_LINK_EXPIRY).toBe("30"));
+  it("1, 7 and 30 days from now", () => {
+    expect(cardLinkExpiresAt("1", now)).toBe("2026-10-27T09:00:00.000Z");
+    expect(cardLinkExpiresAt("7", now)).toBe("2026-11-02T09:00:00.000Z");
+    expect(cardLinkExpiresAt("30", now)).toBe("2026-11-25T09:00:00.000Z");
+  });
+  it("until I turn it off has no expiry", () => expect(cardLinkExpiresAt("off", now)).toBeNull());
+});

@@ -230,6 +230,18 @@ export function temperatureDisplay(kind: string, value: number, value2: number |
   return { display: kind === "blood_pressure" && value2 != null ? `${value}/${value2}` : String(std), converted: null as string | null };
 }
 
+/** Download rows: each temperature keeps its entered value and unit, with the other unit beside it marked "(converted)". */
+export function withConvertedTemperature<T extends { kind: string; value: number; value2?: number | null; unit: string }>(rows: T[]) {
+  return rows.map((r) => {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(r)) {
+      out[k] = v;
+      if (k === "unit") out["converted"] = r.kind === "temperature" ? temperatureDisplay(r.kind, Number(r.value), r.value2 ?? null, r.unit, Number(r.value)).converted : null;
+    }
+    return out;
+  });
+}
+
 export function toStandardUnit(kind: string, value: number, unit: string) {
   if (kind === "temperature" && unit === "°C") return { value: round1(value * 9 / 5 + 32), converted: true };
   return { value: Number(value), converted: false };
