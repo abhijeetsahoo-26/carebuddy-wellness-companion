@@ -16,6 +16,7 @@ import { saveCardPrefs, createCardLink, revokeCardLinks, type PublicCard } from 
 import { CARD_FIELDS } from "@/lib/validation";
 import { showError } from "@/lib/errors";
 import { formatDateTimeIST } from "@/lib/time";
+import { DEFAULT_CARD_LINK_EXPIRY, type CardLinkExpiry } from "@/lib/tracking";
 
 export const Route = createFileRoute("/card")({
   head: () => ({
