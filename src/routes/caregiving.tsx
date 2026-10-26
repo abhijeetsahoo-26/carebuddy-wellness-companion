@@ -40,6 +40,7 @@ function Caregiving() {
   return (
     <>
       <PageTitle title="People I look after" sub="Read-only. You see only what each person chose to share." />
+      <p className="mt-2 text-muted-foreground">To get alerts on this phone, turn on reminders in More → Reminders.</p>
       <div className="mt-6 space-y-6">
         {q.isLoading ? <LoadingState /> : q.error ? <ErrorState error={q.error} onRetry={() => q.refetch()} /> :
           !q.data?.length ? <EmptyState title="No one has shared with you yet">When someone sends you an invite link, open it to start.</EmptyState> :
